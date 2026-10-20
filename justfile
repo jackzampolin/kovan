@@ -130,11 +130,21 @@ wasm-clippy:
 # Install the wasm-bindgen test runner of the version the lockfile pins (CI: wasm.yml, wasm-unknown)
 [group("wasm")]
 wasm-bindgen-install:
-    cargo install wasm-bindgen-cli --version "$(cargo metadata --format-version 1 --filter-platform wasm32-unknown-unknown | jq -r '.packages[] | select(.name=="wasm-bindgen") | .version' | head -1)" --locked
+    cargo install wasm-bindgen-cli --version "$({{ just_executable() }} wasm-bindgen-version)" --locked
+
+# Print the wasm-bindgen version the lockfile pins (the runner must be this exact version)
+[private]
+wasm-bindgen-version:
+    @cargo metadata --format-version 1 --filter-platform wasm32-unknown-unknown | jq -r '.packages[] | select(.name=="wasm-bindgen") | .version' | head -1
+
+# Stop before the browser-target tests when the installed test runner is not the version the lockfile pins, saying how to fix it
+[private]
+wasm-runner-check target:
+    @if [ "{{ target }}" = wasm32-unknown-unknown ]; then want="$({{ just_executable() }} wasm-bindgen-version)"; have="$(wasm-bindgen-test-runner --version 2>/dev/null | awk '{print $2}')"; if [ "$have" != "$want" ]; then echo "wasm-bindgen-test-runner is ${have:-not installed}, but the lockfile needs $want: run just wasm-bindgen-install" >&2; exit 1; fi; fi
 
 # Run the wasm_* test suites on one wasm target: wasm32-unknown-unknown or wasm32-wasip1 (CI: wasm.yml)
 [group("wasm")]
-wasm-test target:
+wasm-test target: (wasm-runner-check target)
     bash .github/workflows/wasm-test.sh {{ target }}
 
 # Run the wasm_* test suites on both wasm targets (CI: wasm.yml)
