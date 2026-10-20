@@ -80,13 +80,16 @@ curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
   | sh -s -- -y --default-toolchain none
 ```
 
-and put `~/.elan/bin` on `PATH`. Then, from the repository root:
+(`just lean` also finds lake in `~/.elan/bin` when it is not on `PATH`). Then, from the
+repository root:
 
 ```sh
-bash proofs/lean/check.sh          # both checks below
-bash proofs/lean/check.sh sorry    # fails if `sorry` or `admit` (a hole in a proof) appears
-bash proofs/lean/check.sh build    # `lake build --wfail`: every proof, failing on any warning
+just lean-check-sorry    # fails if `sorry` or `admit` (a hole in a proof) appears
+just lean                # `lake build --wfail`: every proof, failing on any warning
 ```
+
+Both run `check.sh` in this directory (`bash proofs/lean/check.sh sorry` and `... build`;
+with no argument it runs both).
 
 The first build downloads the pinned Lean release. CI runs the same two checks
 (`.github/workflows/lean.yml`), with an elan release pinned by its SHA-256.

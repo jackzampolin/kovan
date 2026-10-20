@@ -25,9 +25,9 @@ an entry it cannot place and is thrown away. It cloned up to 39 entries for noth
 used to try again on the very next remove, and fail again, so a map that kept going up and
 down between 39 and 40 entries copied up to 39 entries on every remove. Now the failed shrink
 writes down 19 (half of 39) and no remove tries again until fewer than 19 entries are left; a
-resize that succeeds, or a clear, erases what was written. The Lean proof shows that between
-two such erasures, all failed shrinks together copy fewer than 2 * 39 = 78 entries, whatever
-the operations; the TLA+ model checks the same rule with several threads at once, and keeps
+resize that succeeds, or a clear, erases what was written. The Lean proof shows, for one
+thread doing one operation at a time, that between two such erasures all failed shrinks
+together copy fewer than 2 * 39 = 78 entries, whatever the operations; the TLA+ model checks the same rule with several threads at once, and keeps
 the two older versions of the rule (no threshold at all, and a clear that keeps the threshold)
 as mutations that it must catch.
 
@@ -48,25 +48,25 @@ every size; a Lean proof covers every size, for its one-thread model of the code
 
 ## How to run them
 
-TLA+: the models need Java on `PATH` (CI uses Java 21). The runner fetches the pinned TLA+
-tools on first use.
+Every proof runs through the `justfile` at the repository root (`just` lists its recipes):
 
 ```sh
-bash proofs/tla/run_tlc.sh hopscotch    # one family: every configuration in proofs/tla/hopscotch
-bash proofs/tla/run_tlc.sh all          # every family
+just tla hopscotch                  # one TLA+ family: every configuration in proofs/tla/hopscotch
+just tla hopscotch HS_shrink_fail   # only the configurations named
+just tla-all                        # every TLA+ family
+just lean-check-sorry               # fail if a Lean proof has a hole in it (sorry, admit)
+just lean                           # build every Lean proof, failing on any warning
+just proofs                         # all of the above
 ```
 
-A run compares each configuration's result with the family's `EXPECTED.txt` and exits non-zero
-on any mismatch. CI runs `proofs/tla/run_tlc.sh all` (`.github/workflows/tla.yml`).
-`proofs/tla/README.md` explains the models, their configurations and their findings.
+TLA+: the models need Java on `PATH` (CI uses Java 21); the runner, `proofs/tla/run_tlc.sh`,
+fetches the pinned TLA+ tools on first use. A run compares each configuration's result with the
+family's `EXPECTED.txt` and exits non-zero on any mismatch. CI runs every family
+(`.github/workflows/tla.yml`). `proofs/tla/README.md` explains the models, their
+configurations and their findings.
 
-Lean: install elan once (`proofs/lean/README.md` says how), then
-
-```sh
-bash proofs/lean/check.sh    # fails on a hole in a proof (sorry, admit), then builds every proof
-```
-
-CI runs the same (`.github/workflows/lean.yml`).
+Lean: install elan once (`proofs/lean/README.md` says how). The recipes run
+`proofs/lean/check.sh`, which CI runs too (`.github/workflows/lean.yml`).
 
 ## Coverage
 
@@ -82,7 +82,7 @@ CI runs the same (`.github/workflows/lean.yml`).
   that must fail.
 - `lean/Kovan/HopscotchShrink.lean`: the hopscotch map's shrink threshold, for one thread and
   every sequence of operations: a successful resize and a clear erase it; after a failed shrink
-  at `c` entries no shrink is asked for while `max (c / 2) 1` entries or more remain, and the
-  first remove below that while the map is underfull asks; between two erasures each failed
+  at `c` entries, until the next erasure, no shrink is asked for while `max (c / 2) 1` entries
+  or more remain, and the first remove below that while the map is underfull asks; between two erasures each failed
   shrink is at fewer than half the entries of the one before, and all of them copy fewer than
   twice the entries of the first.

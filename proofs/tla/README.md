@@ -8,14 +8,15 @@ counterexample for every one, and none for the code as built.
 
 | where | what | run |
 |-------|------|-----|
-| `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `bash proofs/tla/run_tlc.sh reclaim` (about 37 minutes) |
-| `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `bash proofs/tla/run_tlc.sh chained` (about 23 minutes) |
-| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap, the shrink a remove asks for and its threshold (`shrink_below`) | `bash proofs/tla/run_tlc.sh hopscotch` (about 3 minutes in the recorded run) |
+| `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `just tla reclaim` (about 37 minutes) |
+| `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `just tla chained` (about 23 minutes) |
+| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap, the shrink a remove asks for and its threshold (`shrink_below`) | `just tla hopscotch` (about 3 minutes in the recorded run) |
 
-`bash proofs/tla/run_tlc.sh all` runs every family (each directory of `proofs/tla/` with an
-`EXPECTED.txt`). The script takes the TLA+ tools from `$TLA2TOOLS` when set, otherwise from
-`proofs/tla/.tools/tla2tools.jar`, which it fetches on first use (release v1.7.4, TLC 2.19, the
-version of every recorded run).
+`just tla-all` runs every family (each directory of `proofs/tla/` with an `EXPECTED.txt`), and
+`just tla <family> [configuration...]` one family, or only the configurations named; both run
+`proofs/tla/run_tlc.sh` (`bash proofs/tla/run_tlc.sh all`, `... <family>`). The script takes the
+TLA+ tools from `$TLA2TOOLS` when set, otherwise from `proofs/tla/.tools/tla2tools.jar`, which
+it fetches on first use (release v1.7.4, TLC 2.19, the version of every recorded run).
 `TLC_WORKERS` caps the workers of a passing configuration (default: TLC's `auto`), `TLC_LIMIT` the
 seconds each configuration may take (default 3600). A configuration expected to break a property
 runs one worker, so the breadth-first trace is the shortest, and the trace is kept in
@@ -937,7 +938,7 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
   against the count its copy finds: the ask and the copy are separate steps, and an insert can
   land between them. In the witness the remove leaves three entries and asks; an insert has
   already taken its home guard, the shrink waits for it (as every resize waits for a guard
-  holder) and copies four. So with several threads a shrink can be tried at a count above the
+  holder), and once it holds every guard the table it is about to copy holds four. So with several threads a shrink can be tried at a count above the
   threshold, by the inserts that land between the ask and the copy. The Lean proof of the work
   bound (`proofs/lean/Kovan/HopscotchShrink.lean`) is for one thread and does not cover this.
 
