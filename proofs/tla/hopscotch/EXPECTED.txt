@@ -46,3 +46,13 @@ HS_mut_unguarded_check             MC_HopscotchMap    violated:CondExact
 HS_wit_reserved_meet               MC_HopscotchMap    violated:NoReservedMeet
 HS_wit_cond_resize                 MC_HopscotchMap    violated:NoResizeWaitsForClosure
 HS_mut_held_scan_cond              MC_HopscotchMap    violated:NoUseAfterFree
+HS_shrink_fail                     MC_HopscotchMap    pass
+HS_shrink_race                     MC_HopscotchMap    pass
+HS_shrink_cond                     MC_HopscotchMap    pass
+HS_shrink_clear                    MC_HopscotchMap    pass
+HS_shrink_live                     MC_HopscotchMap    pass
+HS_mut_no_shrink_bound             MC_HopscotchMap    violated:NoShrinkRetry
+HS_mut_clear_keeps_bound           MC_HopscotchMap    violated:ShrinkUnblocked
+HS_wit_shrink_after_insert         MC_HopscotchMap    violated:NoGrowthBeforeShrink
+HS_wit_shrink_given_up             MC_HopscotchMap    violated:NoShrinkGivenUp
+HS_wit_shrink_published            MC_HopscotchMap    violated:NoRemoveShrinkPublished

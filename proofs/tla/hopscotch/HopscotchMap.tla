@@ -28,6 +28,14 @@
 (* writer), placing it as an insert places an entry, so the entry lands     *)
 (* without the guard ever being released after the closure ran.            *)
 (*                                                                          *)
+(* A remove that leaves the table less than a quarter full asks for a      *)
+(* shrink to half the size (`unlink_held`), unless a shrink failed since    *)
+(* the last published resize or clear and the count the remove left is not *)
+(* below what that failure wrote: a shrink whose copy does not fit is given *)
+(* up (`try_resize`) and writes half its count (at least 1) to             *)
+(* `shrinkBelow`, and a remove asks again only below that. A published      *)
+(* resize and a clear set `shrinkBelow` back to "no threshold".             *)
+(*                                                                          *)
 (* The hash of key k is k (the tests' identity hasher); NH is the           *)
 (* neighborhood size (32 in the code). `Mutation` puts back one 0.1.20 rule *)
 (* at a time; see README.md.                                                *)
@@ -47,6 +55,7 @@ CONSTANTS
     MaxTables,   \* table pool bound
     MaxCap,      \* the largest bucket count a table may have
     MaxStamp,    \* move stamps wrap at MaxStamp + 1
+    MinCap,      \* MIN_CAPACITY (64 in the code): no table of MinCap buckets or fewer shrinks
     Mutation     \* "none" or one 0.1.20 rule put back
 
 None == 0
@@ -64,6 +73,13 @@ Home(k, c) == k % c
 Min(S) == CHOOSE x \in S : \A y \in S : x <= y
 Max2(a, b) == IF a > b THEN a ELSE b
 
+\* `usize::MAX` in `shrink_below`, "no threshold": above every count (a count never exceeds the
+\* entry pool), so it lets every remove ask for a shrink.
+ShrinkAny == MaxEntries + 1
+\* `underfull` (hopscotch.rs): fewer than a quarter of the buckets hold an entry, in a table
+\* bigger than the smallest.
+Underfull(n, c) == 4 * n < c /\ c > MinCap
+
 VARIABLES
     ent,    \* entries: [st, key, val]
     tb,     \* tables: [slot, hops, grd, stamp, cap, st]
@@ -74,9 +90,14 @@ VARIABLES
     hist,   \* its changes
     err,    \* the first broken check
     prot,   \* entries each thread's guard protects
-    ts      \* threads
+    ts,     \* threads
+    shrinkBelow, \* `shrink_below`: a remove asks for a shrink only below it (ShrinkAny: always)
+    recorded     \* history: what the last failed shrink since the last published resize or
+                 \* clear wrote (ShrinkAny when none did), whatever the code does with it
 
-vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts>>
+vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts, shrinkBelow, recorded>>
+\* The threshold and its history, which only a failed shrink, a publication and a clear write.
+Thresholds == <<shrinkBelow, recorded>>
 
 InitEntry(i) == Len(InitSlots[i + 1]) = 2
 InitIds == {i \in 0..(Len(InitSlots) - 1) : InitEntry(i)}
@@ -125,7 +146,7 @@ Idle == [pc |-> "next", i |-> 1, t |-> 0, h |-> 0, hw |-> [hops |-> {}, stamp |-
          ycnt |-> [k \in Keys |-> 0], yv |-> {}, old |-> 0, nt |-> 0, j |-> 1, gc |-> 0,
          rsc |-> FALSE, skp |-> FALSE, rk |-> "none", rc |-> 0, ce |-> 0, rd |-> [o \in Offs |-> 0],
          dec |-> "none", saw |-> None, nv |-> None, runs |-> 0, pre |-> None, rsv |-> FALSE,
-         met |-> FALSE]
+         met |-> FALSE, shr |-> FALSE, left |-> 0, ret |-> "IW"]
 
 Go(p, lbl) == [ts EXCEPT ![p].pc = lbl]
 
@@ -147,6 +168,8 @@ Init ==
     /\ err = "none"
     /\ prot = [p \in Procs |-> {}]
     /\ ts = [p \in Procs |-> Idle]
+    /\ shrinkBelow = ShrinkAny   \* `with_capacity_and_hasher` starts with `usize::MAX`
+    /\ recorded = ShrinkAny
 
 \* ---------------------------------------------------------------- dispatch
 
@@ -173,8 +196,8 @@ Dispatch(p) ==
                                 ![p].res = None, ![p].ins = FALSE, ![p].cnt = FALSE,
                                 ![p].rmv = FALSE, ![p].ycnt = [k \in Keys |-> 0], ![p].yv = {},
                                 ![p].dec = "none", ![p].saw = None, ![p].nv = None,
-                                ![p].runs = 0, ![p].rsv = FALSE, ![p].e = 0]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+                                ![p].runs = 0, ![p].rsv = FALSE, ![p].e = 0, ![p].shr = FALSE]
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 Finish(p, e) ==
     /\ err' = e
@@ -188,7 +211,7 @@ IW(p) ==
     /\ ts[p].pc = "IW"
     /\ ~latch
     /\ ts' = [ts EXCEPT ![p].t = cur, ![p].pc = "IC"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The home guard, taken without waiting (a held one sends the writer back).
 IC(p) ==
@@ -200,14 +223,14 @@ IC(p) ==
                /\ UNCHANGED tb
           ELSE /\ tb' = [tb EXCEPT !.grd[t][h] = TRUE]
                /\ ts' = [ts EXCEPT ![p].h = h, ![p].hw = Word(t, h), ![p].pc = "IS"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The key's entry under the guard (a stable scan): the words of the slots the home's bits name,
 \* loaded without protecting their entries (`find_held`).
 IS(p) ==
     /\ ts[p].pc = "IS"
     /\ ts' = [ts EXCEPT ![p].rd = HeldLoad(ts[p].t, ts[p].h, ts[p].hw.hops), ![p].pc = "IU"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The entries IS loaded, used: the key's entry answered, replaced, or absent.
 IU(p) ==
@@ -245,7 +268,7 @@ IU(p) ==
                  /\ ts' = [ts EXCEPT ![p].off = 0, ![p].rd = Unloaded, ![p].pc = "IFr"]
                  /\ err' = used
                  /\ UNCHANGED <<ent, tb, abs, hist>>
-    /\ UNCHANGED <<cur, latch, count, prot>>
+    /\ UNCHANGED <<cur, latch, count, prot, Thresholds>>
 
 Late == Mutation = "link_then_publish"
 
@@ -278,7 +301,7 @@ IFr(p) ==
                  /\ tb' = [tb EXCEPT !.hops[t][h] = ts[p].hw.hops \cup {o}]
                  /\ ts' = [ts EXCEPT ![p].hw.hops = @ \cup {o}, ![p].free = h + o, ![p].pc = "IL"]
                  /\ UNCHANGED <<ent, err>>
-    /\ UNCHANGED <<cur, latch, count, abs, hist, prot>>
+    /\ UNCHANGED <<cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* The link CAS into the slot whose bit is published: the insert's linearization point. A lost
 \* slot takes the bit back; from the first free slot the next is tried, after a displacement the
@@ -305,7 +328,7 @@ IL(p) ==
                         THEN [ts EXCEPT ![p].hw.hops = @ \ {f - h}, ![p].off = @ + 1, ![p].pc = "IFr"]
                         ELSE [ts EXCEPT ![p].hw.hops = @ \ {f - h}, ![p].out = "retry", ![p].pc = "IR"]
                /\ UNCHANGED <<ent, abs, hist>>
-    /\ UNCHANGED <<cur, latch, count, err, prot>>
+    /\ UNCHANGED <<cur, latch, count, err, prot, Thresholds>>
 
 \* Displacement: the first free slot past the neighborhood.
 D0(p) ==
@@ -315,7 +338,7 @@ D0(p) ==
            frees == {i \in (h + NH)..(Span(t, tb) - 1) : tb.slot[t][i] = 0}
        IN ts' = IF frees = {} THEN [ts EXCEPT ![p].out = "needresize", ![p].pc = "IR"]
                 ELSE [ts EXCEPT ![p].free = Min(frees), ![p].pc = "D1"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* One step toward the home: done when the free slot is in the neighborhood.
 D1(p) ==
@@ -323,7 +346,7 @@ D1(p) ==
     /\ ts' = IF ts[p].free < ts[p].h + NH
              THEN Go(p, "DL")
              ELSE [ts EXCEPT ![p].from = ts[p].free + 1 - NH, ![p].con = FALSE, ![p].pc = "D2"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 Old == Mutation = "move_clear_first"
 
@@ -357,7 +380,7 @@ D2(p) ==
                          /\ tb' = [tb EXCEPT !.grd[t][own] = TRUE]
                          /\ ts' = [ts EXCEPT ![p].own = own, ![p].ow = Word(t, own), ![p].e = e,
                                              ![p].pc = "M1"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, Thresholds>>
 
 \* Release the moved entry's home guard, publishing the word as the mover staged it.
 RelOwner(t, p) == [tb EXCEPT !.grd[t][ts[p].own] = FALSE, !.hops[t][ts[p].own] = ts[p].ow.hops,
@@ -376,7 +399,7 @@ M1(p) ==
          [] OTHER ->
               /\ tb' = [tb EXCEPT !.slot[t][ts[p].free] = ts[p].e]
               /\ ts' = Go(p, "M2")
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Publish the new bit with the stamp advanced, the guard still held.
 M2(p) ==
@@ -386,7 +409,7 @@ M2(p) ==
            ow2 == [hops |-> ts[p].ow.hops \cup {ts[p].free - own}, stamp |-> Bump(ts[p].ow.stamp)]
        IN /\ tb' = [tb EXCEPT !.hops[t][own] = ow2.hops, !.stamp[t][own] = ow2.stamp]
           /\ ts' = [ts EXCEPT ![p].ow = ow2, ![p].pc = "M3"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Empty the old slot; its bit is dropped at the release.
 M3(p) ==
@@ -394,13 +417,13 @@ M3(p) ==
     /\ LET t == ts[p].t IN
        /\ tb' = [tb EXCEPT !.slot[t][ts[p].from] = 0]
        /\ ts' = [ts EXCEPT ![p].ow.hops = @ \ {ts[p].from - ts[p].own}, ![p].pc = "M4"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 M4(p) ==
     /\ ts[p].pc = "M4"
     /\ tb' = RelOwner(ts[p].t, p)
     /\ ts' = [ts EXCEPT ![p].free = ts[p].from, ![p].pc = "D1"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* 0.1.20's move ("move_clear_first"): no guard of the entry's home; a copy linked at the free
 \* slot, the original unlinked, the old bit cleared, then the new bit set; no stamp.
@@ -414,7 +437,7 @@ O1(p) ==
             /\ ent' = Alloc(ent, c, ent.key[ts[p].e], ent.val[ts[p].e])
             /\ tb' = [tb EXCEPT !.slot[t][ts[p].free] = c]
             /\ ts' = [ts EXCEPT ![p].n = c, ![p].pc = "O2"]
-    /\ UNCHANGED <<cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 O2(p) ==
     /\ ts[p].pc = "O2"
@@ -426,21 +449,21 @@ O2(p) ==
        ELSE /\ tb' = [tb EXCEPT !.slot[t][ts[p].free] = 0]
             /\ ent' = [ent EXCEPT !.st[ts[p].n] = "free"]
             /\ ts' = [ts EXCEPT ![p].from = @ + 1, ![p].con = TRUE, ![p].pc = "D2"]
-    /\ UNCHANGED <<cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 O3(p) ==
     /\ ts[p].pc = "O3"
     /\ LET t == ts[p].t IN
        tb' = [tb EXCEPT !.hops[t][ts[p].own] = @ \ {ts[p].from - ts[p].own}]
     /\ ts' = Go(p, "O4")
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 O4(p) ==
     /\ ts[p].pc = "O4"
     /\ LET t == ts[p].t IN
        tb' = [tb EXCEPT !.hops[t][ts[p].own] = @ \cup {ts[p].free - ts[p].own}]
     /\ ts' = [ts EXCEPT ![p].free = ts[p].from, ![p].pc = "D1"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Link the new entry in the slot the displacement freed: its bit first, then IL (0.1.20 and
 \* "link_then_publish": the link, the bit staged).
@@ -466,14 +489,14 @@ DL(p) ==
                  /\ tb' = [tb EXCEPT !.hops[t][ts[p].h] = ts[p].hw.hops \cup {f - ts[p].h}]
                  /\ ts' = [ts EXCEPT ![p].hw.hops = @ \cup {f - ts[p].h}, ![p].off = NH, ![p].pc = "IL"]
                  /\ UNCHANGED <<ent, err>>
-    /\ UNCHANGED <<cur, latch, count, abs, hist, prot>>
+    /\ UNCHANGED <<cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* A new entry is counted before its home guard is released.
 ICnt(p) ==
     /\ ts[p].pc = "ICnt"
     /\ count' = IF ts[p].cnt THEN count ELSE count + 1
     /\ ts' = [ts EXCEPT ![p].cnt = TRUE, ![p].pc = "IR"]
-    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, Thresholds>>
 
 \* Release the home guard: the staged bits published; a linked entry becomes visible here.
 IR(p) ==
@@ -486,7 +509,7 @@ IR(p) ==
           /\ abs' = IF linked /\ Late THEN [abs EXCEPT ![K(p)] = V(p)] ELSE abs
           /\ hist' = IF linked /\ Late THEN Append(hist, <<K(p), V(p)>>) ELSE hist
           /\ ts' = [ts EXCEPT ![p].ins = ts[p].ins \/ linked, ![p].pc = "IA"]
-    /\ UNCHANGED <<ent, cur, latch, count, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, err, prot, Thresholds>>
 
 \* The answer. 0.1.20 ("resize_retry"): a landed write re-validates and retries in the new table.
 IA(p) ==
@@ -506,7 +529,7 @@ IA(p) ==
                  LET exact == Op(p).op = "ins" \/ (r = None) = ts[p].ins
                      lin == r = None \/ SeenDuring(p, K(p), r)
                  IN Finish(p, IF exact /\ lin THEN err ELSE Fail("insert_exact"))
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* No room: the writer resizes to twice its table's capacity itself (`try_resize`), unless the
 \* latch is taken (a resize or a clear in flight), and then writes again.
@@ -517,9 +540,40 @@ NR(p) ==
             /\ UNCHANGED latch
        ELSE /\ latch' = TRUE
             /\ ts' = [ts EXCEPT ![p].old = cur, ![p].gc = 0, ![p].rk = "resize",
-                                ![p].rc = 2 * tb.cap[ts[p].t], ![p].pc = "Z1"]
+                                ![p].rc = 2 * tb.cap[ts[p].t], ![p].ret = "IW", ![p].pc = "Z1"]
     /\ prot' = [prot EXCEPT ![p] = {}]
-    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err>>
+    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err, Thresholds>>
+
+\* ---------------------------------------------------------------- the shrink a remove asks for
+
+\* `unlink_held` asks for a shrink when the count n it left underfills the table t and is below
+\* `shrink_below`. "no_shrink_bound" (the code before the threshold): underfull alone.
+AsksShrink(n, t) ==
+    /\ Underfull(n, tb.cap[t])
+    /\ Mutation = "no_shrink_bound" \/ n < shrinkBelow
+
+\* The thread state once the remove decided: `shr` whether it asked, `rc` the capacity it asks
+\* for (half its table's), `left` the count it left (rc and left only change when it asks).
+AskShrink(p, n, t) ==
+    LET ask == AsksShrink(n, t) IN
+    [ts EXCEPT ![p].shr = ask,
+               ![p].rc = IF ask THEN tb.cap[t] \div 2 ELSE @,
+               ![p].left = IF ask THEN n ELSE @]
+
+\* The two checks of the threshold, at every remove's decision (`e` the error so far):
+\* - "shrink_retry": it asked although the count it left is not below what the last failed
+\*   shrink since the last publication or clear recorded (NoShrinkRetry);
+\* - "shrink_blocked": it did not ask although the map is underfull and no shrink failed since
+\*   the last publication or clear (ShrinkUnblocked).
+ShrinkCheck(e, n, t) ==
+    LET ask == AsksShrink(n, t)
+        first(x) == IF e = "none" THEN x ELSE e
+    IN CASE ask /\ n >= recorded -> first("shrink_retry")
+         [] ~ask /\ Underfull(n, tb.cap[t]) /\ recorded = ShrinkAny -> first("shrink_blocked")
+         [] OTHER -> e
+
+\* Where a remove goes once its shrink is over: its answer (R9; CA for a conditional write).
+AfterShrink(p) == IF Op(p).op \in Cond THEN "CA" ELSE "R9"
 
 \* ---------------------------------------------------------------- remove (rem, frm)
 
@@ -527,7 +581,7 @@ RW(p) ==
     /\ ts[p].pc = "RW"
     /\ ~latch
     /\ ts' = [ts EXCEPT ![p].t = cur, ![p].pc = "RC"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 Unguarded == Mutation = "unguarded_remove"
 
@@ -549,7 +603,7 @@ RC(p) ==
             [] OTHER -> /\ tb' = [tb EXCEPT !.grd[t][h] = TRUE]
                         /\ ts' = [ts EXCEPT ![p].h = h, ![p].hw = Word(t, h),
                                             ![p].pc = IF Op(p).op \in CondRP THEN "CS" ELSE "RS"]
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The key's entry under the guard: the words of the slots the home's bits name, loaded without
 \* protecting their entries (`find_held`); RU uses them. 0.1.20 ("unguarded_remove"): a scan with
@@ -570,7 +624,7 @@ RS(p) ==
             [] OTHER ->
                  /\ ts' = [ts EXCEPT ![p].e = e, ![p].off = o, ![p].pc = "RX"]
                  /\ prot' = [prot EXCEPT ![p] = Protect(@, e)]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, Thresholds>>
 
 \* The entries RS loaded, used: the key's entry unlinked by a store (0.1.20: found, then a CAS),
 \* or none, and the guard released.
@@ -593,7 +647,7 @@ RU(p) ==
                   /\ ts' = [ts EXCEPT ![p].e = e, ![p].hw.hops = @ \ {o}, ![p].rd = Unloaded,
                                       ![p].res = IF ts[p].res # None THEN @ ELSE ent.val[e],
                                       ![p].rmv = TRUE, ![p].pc = "RN"]
-    /\ UNCHANGED <<ent, cur, latch, count, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, prot, Thresholds>>
 
 \* 0.1.20: the unlink CAS; an entry moved meanwhile makes the call answer None.
 RX(p) ==
@@ -608,20 +662,24 @@ RX(p) ==
                                    ![p].rmv = TRUE, ![p].pc = "RB"]
           ELSE /\ ts' = Go(p, "R9")
                /\ UNCHANGED <<tb, abs, hist>>
-    /\ UNCHANGED <<ent, cur, latch, count, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, err, prot, Thresholds>>
 
 \* 0.1.20: the bit cleared in the live word, with no guard.
 RB(p) ==
     /\ ts[p].pc = "RB"
     /\ tb' = [tb EXCEPT !.hops[ts[p].t][ts[p].h] = @ \ {ts[p].off}]
     /\ ts' = Go(p, "RN")
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
+\* The count down by one (under the guard), and `unlink_held`'s decision to ask for a shrink.
 RN(p) ==
     /\ ts[p].pc = "RN"
-    /\ count' = count - 1
-    /\ ts' = Go(p, IF Unguarded THEN "RT" ELSE "RR")
-    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot>>
+    /\ LET n == count - 1        \* the count this remove leaves
+           t == ts[p].t
+       IN /\ count' = n
+          /\ ts' = [AskShrink(p, n, t) EXCEPT ![p].pc = IF Unguarded THEN "RT" ELSE "RR"]
+          /\ err' = ShrinkCheck(err, n, t)
+    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, prot, Thresholds>>
 
 RR(p) ==
     /\ ts[p].pc = "RR"
@@ -630,14 +688,29 @@ RR(p) ==
        IN tb' = [tb EXCEPT !.grd[t][h] = FALSE, !.hops[t][h] = ts[p].hw.hops,
                            !.stamp[t][h] = ts[p].hw.stamp]
     /\ ts' = Go(p, "RT")
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
+\* Retire the unlinked entry; then the shrink, if RN asked for one (RQ), or the answer.
 RT(p) ==
     /\ ts[p].pc = "RT"
     /\ ent' = [ent EXCEPT !.st[ts[p].e] = "retired"]
     /\ err' = IF ent.st[ts[p].e] = "retired" THEN Fail("double_retire") ELSE err
-    /\ ts' = Go(p, "R9")
-    /\ UNCHANGED <<tb, cur, latch, count, abs, hist, prot>>
+    /\ ts' = Go(p, IF ts[p].shr THEN "RQ" ELSE "R9")
+    /\ UNCHANGED <<tb, cur, latch, count, abs, hist, prot, Thresholds>>
+
+\* The remove's `try_resize(capacity / 2)`, after the guard was released and the entry retired:
+\* the latch taken (then Z1 as any resize, coming back to the answer), or, when a resize or a
+\* clear holds it, nothing (`try_resize` returns at its compare_exchange).
+RQ(p) ==
+    /\ ts[p].pc = "RQ"
+    /\ IF latch
+       THEN /\ ts' = [ts EXCEPT ![p].shr = FALSE, ![p].pc = AfterShrink(p)]
+            /\ UNCHANGED latch
+       ELSE /\ latch' = TRUE
+            /\ ts' = [ts EXCEPT ![p].shr = FALSE, ![p].old = cur, ![p].gc = 0, ![p].rk = "resize",
+                                ![p].ret = AfterShrink(p), ![p].pc = "Z1"]
+    /\ prot' = [prot EXCEPT ![p] = {}]
+    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err, Thresholds>>
 
 R9(p) ==
     /\ ts[p].pc = "R9"
@@ -649,7 +722,7 @@ R9(p) ==
                /\ UNCHANGED prot
           ELSE Finish(p, IF ok /\ (r # None \/ SeenDuring(p, K(p), None))
                          THEN err ELSE Fail("lin_remove"))
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* ---------------------------------------------------------------- get
 
@@ -659,7 +732,7 @@ G0(p) ==
            h == Home(K(p), tb.cap[t])
        IN ts' = [ts EXCEPT ![p].t = t, ![p].h = h, ![p].hw = Word(t, h),
                            ![p].rest = tb.hops[t][h], ![p].pc = "G2"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Scan the slots the bits name, one load each.
 G2(p) ==
@@ -677,7 +750,7 @@ G2(p) ==
                   /\ ts' = IF e \in Ents /\ ent.key[e] = K(p)
                            THEN [ts EXCEPT ![p].res = ent.val[e], ![p].pc = "G9"]
                            ELSE [ts EXCEPT ![p].rest = @ \ {o}, ![p].met = @ \/ e = RSV]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* A miss rescans when the home's move stamp moved (0.1.20 "no_stamp": never).
 G3(p) ==
@@ -686,17 +759,17 @@ G3(p) ==
        ts' = IF w.stamp = ts[p].hw.stamp \/ Mutation = "no_stamp"
              THEN Go(p, "G8")
              ELSE [ts EXCEPT ![p].hw = w, ![p].rest = w.hops, ![p].rsc = TRUE, ![p].pc = "G2"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 G8(p) ==
     /\ ts[p].pc = "G8"
     /\ ts' = [ts EXCEPT ![p].res = None, ![p].pc = "G9"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 G9(p) ==
     /\ ts[p].pc = "G9"
     /\ Finish(p, IF SeenDuring(p, K(p), ts[p].res) THEN err ELSE Fail("lin_get"))
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* ---------------------------------------------------------------- conditional writes
 \* remove_if (rif, the value in `acc`), replace_if (rpi, the value in `acc`, by `v`), compute
@@ -710,14 +783,14 @@ CP(p) ==
     /\ ts[p].pc = "CP"
     /\ ts' = [ts EXCEPT ![p].pre = ValIn(cur, K(p)),
                         ![p].pc = IF Op(p).op \in CondRP THEN "RW" ELSE "IW"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* remove_if and replace_if under the guard: the words of the slots the home's bits name, loaded
 \* without protecting their entries (`find_held`), as RS loads them; CU uses them.
 CS(p) ==
     /\ ts[p].pc = "CS"
     /\ ts' = [ts EXCEPT ![p].rd = HeldLoad(ts[p].t, ts[p].h, ts[p].hw.hops), ![p].pc = "CU"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The entries CS loaded, used: the key's entry goes to the closure, or the key is absent (the
 \* guard released).
@@ -734,7 +807,7 @@ CU(p) ==
              ELSE /\ ts' = [ts EXCEPT ![p].e = rd[Min(found)], ![p].off = Min(found),
                                       ![p].rd = Unloaded, ![p].pc = "CF"]
                   /\ UNCHANGED tb
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* A use of the entry `e` a writer found under its home guard (the closure reading its value, the
 \* clone of the value answered): a use after free unless it is still live.
@@ -759,7 +832,7 @@ CF(p) ==
        IN /\ ts' = [ts EXCEPT ![p].saw = seen, ![p].nv = next, ![p].dec = dec,
                               ![p].runs = @ + 1, ![p].pc = "CX"]
           /\ err' = IF ts[p].runs > 0 THEN Fail("closure_twice") ELSE LiveUse(ts[p].e)
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* The write, still under the guard: the linearization point of a write (the unlink, the replace,
 \* the fill of the reservation) and of a decision to keep (then the reservation is given back).
@@ -773,14 +846,16 @@ CX(p) ==
            exact == IF ts[p].dec = "unwind" \/ abs[K(p)] = ts[p].saw THEN LiveUse(e)
                     ELSE Fail("cond_exact")
        IN CASE ts[p].dec = "remove" /\ e \in Ents ->
+                 \* `remove_where` and compute's removal unlink through `unlink_held` too, so
+                 \* they decide on a shrink as RN does.
                  /\ tb' = [tb EXCEPT !.slot[t][h + o] = 0]
                  /\ abs' = [abs EXCEPT ![K(p)] = None]
                  /\ hist' = Append(hist, <<K(p), None>>)
                  /\ count' = count - 1
-                 /\ ts' = [ts EXCEPT ![p].hw.hops = @ \ {o},
+                 /\ ts' = [AskShrink(p, count - 1, t) EXCEPT ![p].hw.hops = @ \ {o},
                                      ![p].res = IF op = "rif" THEN ts[p].saw ELSE None,
                                      ![p].pc = "CR"]
-                 /\ err' = exact
+                 /\ err' = ShrinkCheck(exact, count - 1, t)
                  /\ UNCHANGED ent
             [] ts[p].dec = "put" /\ FreeEnts = {} ->
                  /\ err' = Fail("pool")
@@ -811,7 +886,7 @@ CX(p) ==
                                      ![p].pc = "CR"]
                  /\ err' = exact
                  /\ UNCHANGED <<ent, tb, count, abs, hist>>
-    /\ UNCHANGED <<cur, latch, prot>>
+    /\ UNCHANGED <<cur, latch, prot, Thresholds>>
 
 \* Release the home guard, publishing the word as the writer staged it.
 CR(p) ==
@@ -821,7 +896,7 @@ CR(p) ==
        IN tb' = [tb EXCEPT !.grd[t][h] = FALSE, !.hops[t][h] = ts[p].hw.hops,
                            !.stamp[t][h] = ts[p].hw.stamp]
     /\ ts' = Go(p, "CT")
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Retire the entry a remove unlinked (a replace retired its entry at the write).
 CT(p) ==
@@ -830,22 +905,22 @@ CT(p) ==
            gone == ts[p].dec = "remove" /\ e \in Ents
        IN /\ ent' = IF gone THEN [ent EXCEPT !.st[e] = "retired"] ELSE ent
           /\ err' = IF gone /\ ent.st[e] = "retired" THEN Fail("double_retire") ELSE err
-    /\ ts' = Go(p, "CA")
-    /\ UNCHANGED <<tb, cur, latch, count, abs, hist, prot>>
+    /\ ts' = Go(p, IF ts[p].shr THEN "RQ" ELSE "CA")
+    /\ UNCHANGED <<tb, cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* The answer. One that found the key absent (no closure ran) is linearizable: the key was absent
 \* at some moment of the call.
 CA(p) ==
     /\ ts[p].pc = "CA"
     /\ Finish(p, IF ts[p].dec # "none" \/ SeenDuring(p, K(p), None) THEN err ELSE Fail("lin_cond"))
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* ---------------------------------------------------------------- iter
 
 T0(p) ==
     /\ ts[p].pc = "T0"
     /\ ts' = [ts EXCEPT ![p].t = cur, ![p].idx = 0, ![p].recent = [o \in Offs |-> 0], ![p].pc = "T1"]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* The walk met the key of e in a lower slot of e's neighborhood.
 MetBefore(p, home, i, e) ==
@@ -870,7 +945,7 @@ T1(p) ==
                                       ![p].skp = @ \/ skip, ![p].met = @ \/ e = RSV,
                                       ![p].ycnt = IF y THEN [@ EXCEPT ![ent.key[e]] = @ + 1] ELSE @,
                                       ![p].yv = IF y THEN @ \cup {<<ent.key[e], ent.val[e]>>} ELSE @]
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* Every key present for the whole walk once; nothing never present; none twice.
 T9(p) ==
@@ -879,15 +954,16 @@ T9(p) ==
            real == \A kv \in ts[p].yv : SeenDuring(p, kv[1], kv[2])
            norep == \A k \in Keys : ts[p].ycnt[k] <= 1
        IN Finish(p, IF once /\ real /\ norep THEN err ELSE Fail("iter"))
-    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist>>
+    /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, Thresholds>>
 
 \* ---------------------------------------------------------------- resizer
 
 Rz(p) == RzProg[ts[p].j]
 
-\* The resizer goes on with its program; a writer that resized writes again.
+\* The resizer goes on with its program; a writer that resized writes again (ret "IW"), and a
+\* remove whose shrink is over gives its answer (ret R9 or CA).
 Done(p) == IF p = RZ THEN [ts EXCEPT ![p].j = @ + 1, ![p].idx = 0, ![p].pc = "next"]
-           ELSE [ts EXCEPT ![p].idx = 0, ![p].pc = "IW"]
+           ELSE [ts EXCEPT ![p].idx = 0, ![p].pc = ts[p].ret, ![p].ret = "IW"]
 
 Z0(p) ==
     /\ ts[p].pc = "next"
@@ -898,7 +974,7 @@ Z0(p) ==
             /\ latch' = TRUE
             /\ ts' = [ts EXCEPT ![p].old = cur, ![p].gc = 0, ![p].rk = Rz(p).kind,
                                 ![p].rc = Rz(p).cap, ![p].pc = "Z1"]
-    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err, prot, Thresholds>>
 
 \* Take every home guard of the old table, waiting out each holder (0.1.20: none).
 Z1(p) ==
@@ -918,7 +994,7 @@ Z1(p) ==
                  /\ tb' = [tb EXCEPT !.grd[old][h] = TRUE]
                  /\ ts' = [ts EXCEPT ![p].gc = h + 1]
                  /\ UNCHANGED latch
-    /\ UNCHANGED <<ent, cur, count, abs, hist, err, prot>>
+    /\ UNCHANGED <<ent, cur, count, abs, hist, err, prot, Thresholds>>
 
 Unused == {t \in TIds : tb.st[t] = "unused"}
 
@@ -936,7 +1012,7 @@ ZC(p) ==
        ELSE /\ tb' = Fresh(Min(Unused), ts[p].rc)
             /\ ts' = [ts EXCEPT ![p].nt = Min(Unused), ![p].idx = 0, ![p].pc = "ZK"]
             /\ UNCHANGED err
-    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, prot>>
+    /\ UNCHANGED <<ent, cur, latch, count, abs, hist, prot, Thresholds>>
 
 \* Copy slot idx of the old table into the new one: the first free slot from the entry's home,
 \* no displacement; a neighborhood found full doubles the new table and copies again.
@@ -948,36 +1024,51 @@ ZK(p) ==
            e == tb.slot[old][i]
        IN IF i >= Span(old, tb)
           THEN /\ ts' = Go(p, "ZP")
-               /\ UNCHANGED <<ent, tb, err, prot>>
+               /\ UNCHANGED <<ent, tb, err, prot, Thresholds>>
           ELSE IF e \notin Ents
           THEN /\ ts' = [ts EXCEPT ![p].idx = i + 1]
-               /\ UNCHANGED <<ent, tb, err, prot>>
+               /\ UNCHANGED <<ent, tb, err, prot, Thresholds>>
           ELSE LET h2 == Home(ent.key[e], tb.cap[nt])
                    frees == {x \in h2..(Span(nt, tb) - 1) : tb.slot[nt][x] = 0}
                    x == IF frees = {} THEN -1 ELSE Min(frees)
                    copies == InSlots(nt)
+                   fits == x >= 0 /\ x - h2 < NH
                IN /\ prot' = [prot EXCEPT ![p] = Protect(@, e)]
-                  /\ IF x >= 0 /\ x - h2 < NH /\ FreeEnts # {}
+                  /\ IF fits /\ FreeEnts # {}
                      THEN LET c == Min(FreeEnts) IN
                           /\ ent' = Alloc(ent, c, ent.key[e], ent.val[e])
                           /\ tb' = [tb EXCEPT !.slot[nt][x] = c, !.hops[nt][h2] = @ \cup {x - h2}]
                           /\ ts' = [ts EXCEPT ![p].idx = i + 1]
+                          /\ UNCHANGED <<err, Thresholds>>
+                     ELSE IF ~fits /\ tb.cap[nt] < tb.cap[old]
+                     \* A shrink whose copy does not fit is given up (`try_resize`, the `None`
+                     \* arm): the copies are freed with the unpublished table, the old table's
+                     \* guards are given back (`release_writers`), and half the count, at least
+                     \* 1, is written to `shrink_below` (and to the history).
+                     THEN /\ ent' = [ent EXCEPT !.st = [c \in Ents |-> IF c \in copies THEN "free" ELSE @[c]]]
+                          /\ tb' = [tb EXCEPT !.st[nt] = "unused", !.grd[old] = [h \in Homes |-> FALSE]]
+                          /\ shrinkBelow' = Max2(count \div 2, 1)
+                          /\ recorded' = Max2(count \div 2, 1)
+                          /\ ts' = Go(p, "Z4")
                           /\ UNCHANGED err
                      ELSE IF FreeEnts = {} \/ 2 * tb.cap[nt] > MaxCap
                      THEN /\ err' = Fail("copy_bound")
                           /\ ts' = Go(p, "done")
-                          /\ UNCHANGED <<ent, tb>>
+                          /\ UNCHANGED <<ent, tb, Thresholds>>
                      ELSE /\ ent' = [ent EXCEPT !.st = [c \in Ents |-> IF c \in copies THEN "free" ELSE @[c]]]
                           /\ tb' = Fresh(nt, 2 * tb.cap[nt])
                           /\ ts' = [ts EXCEPT ![p].idx = 0]
-                          /\ UNCHANGED err
+                          /\ UNCHANGED <<err, Thresholds>>
     /\ UNCHANGED <<cur, latch, count, abs, hist>>
 
-\* Publish; the replaced table keeps its guards held.
+\* Publish; the replaced table keeps its guards held. The threshold is erased first
+\* (`shrink_below.store(usize::MAX)` before the table store), and so is the history.
 ZP(p) ==
     /\ ts[p].pc = "ZP"
     /\ tb' = [tb EXCEPT !.st[ts[p].old] = "old", !.st[ts[p].nt] = "current"]
     /\ cur' = ts[p].nt
+    /\ shrinkBelow' = ShrinkAny
+    /\ recorded' = ShrinkAny
     /\ ts' = Go(p, "Z4")
     /\ UNCHANGED <<ent, latch, count, abs, hist, err, prot>>
 
@@ -991,19 +1082,24 @@ ZX(p) ==
           THEN /\ tb' = [tb EXCEPT !.hops[old] = [h \in Homes |-> {}],
                                    !.grd[old] = [h \in Homes |-> FALSE]]
                /\ count' = 0
+               \* The entries a failed shrink recorded its threshold for are gone: the
+               \* threshold is erased with them, and so is the history.
+               \* "clear_keeps_bound" (the threshold without this reset): the clear leaves it.
+               /\ shrinkBelow' = IF Mutation = "clear_keeps_bound" THEN shrinkBelow ELSE ShrinkAny
+               /\ recorded' = ShrinkAny
                /\ ts' = Go(p, "Z4")
                /\ UNCHANGED <<ent, abs, hist>>
           ELSE LET e == tb.slot[old][i]
                    k == ent.key[e]
                IN IF e \notin Ents
                   THEN /\ ts' = [ts EXCEPT ![p].idx = i + 1]
-                       /\ UNCHANGED <<ent, tb, count, abs, hist>>
+                       /\ UNCHANGED <<ent, tb, count, abs, hist, Thresholds>>
                   ELSE /\ tb' = [tb EXCEPT !.slot[old][i] = 0]
                        /\ ent' = [ent EXCEPT !.st[e] = "retired"]
                        /\ abs' = [abs EXCEPT ![k] = None]
                        /\ hist' = Append(hist, <<k, None>>)
                        /\ ts' = [ts EXCEPT ![p].idx = i + 1]
-                       /\ UNCHANGED count
+                       /\ UNCHANGED <<count, Thresholds>>
     /\ UNCHANGED <<cur, latch, err, prot>>
 
 Z4(p) ==
@@ -1011,7 +1107,7 @@ Z4(p) ==
     /\ latch' = FALSE
     /\ prot' = [prot EXCEPT ![p] = {}]
     /\ ts' = Done(p)
-    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err>>
+    /\ UNCHANGED <<ent, tb, cur, count, abs, hist, err, Thresholds>>
 
 \* ---------------------------------------------------------------- spec
 
@@ -1020,7 +1116,8 @@ Worker(p) ==
     \/ IW(p) \/ IC(p) \/ IS(p) \/ IU(p) \/ IFr(p) \/ D0(p) \/ D1(p) \/ D2(p)
     \/ M1(p) \/ M2(p) \/ M3(p) \/ M4(p) \/ O1(p) \/ O2(p) \/ O3(p) \/ O4(p)
     \/ IL(p) \/ DL(p) \/ ICnt(p) \/ IR(p) \/ IA(p) \/ NR(p)
-    \/ RW(p) \/ RC(p) \/ RS(p) \/ RU(p) \/ RX(p) \/ RB(p) \/ RN(p) \/ RR(p) \/ RT(p) \/ R9(p)
+    \/ RW(p) \/ RC(p) \/ RS(p) \/ RU(p) \/ RX(p) \/ RB(p) \/ RN(p) \/ RR(p) \/ RT(p) \/ RQ(p)
+    \/ R9(p)
     \/ G0(p) \/ G2(p) \/ G3(p) \/ G8(p) \/ G9(p)
     \/ CP(p) \/ CS(p) \/ CU(p) \/ CF(p) \/ CX(p) \/ CR(p) \/ CT(p) \/ CA(p)
     \/ T0(p) \/ T1(p) \/ T9(p)
@@ -1082,6 +1179,18 @@ NoLeak ==
 
 Termination == <>AllDone
 
+\* The shrink threshold (`shrink_below`).
+\* NoShrinkRetry: no remove asks for a shrink while the count it leaves is at or above what the
+\* last failed shrink since the last publication or clear recorded, so a failed shrink is not
+\* asked for again at the population it failed at.
+NoShrinkRetry == err # "shrink_retry"
+\* ShrinkReset: the map's threshold is exactly what the history says, so a publication and a
+\* clear erase it, and nothing but a failed shrink sets it.
+ShrinkReset == shrinkBelow = recorded
+\* ShrinkUnblocked: with no failed shrink since the last publication or clear (after a clear,
+\* say), a remove that leaves the map underfull asks for a shrink.
+ShrinkUnblocked == err # "shrink_blocked"
+
 \* ---------------------------------------------------------------- witnesses
 NoMove == \A p \in Workers : ts[p].pc # "M3"
 NoStampRescan == \A p \in Workers : ~ts[p].rsc
@@ -1090,6 +1199,14 @@ NoResizeWaitsForWriter ==
 NoHeldHomeSkip == \A p \in Workers : ~(ts[p].pc = "D2" /\ ts[p].con)
 NoWalkSkip == \A p \in Workers : ~ts[p].skp
 NoReservedMeet == \A p \in Workers : ~ts[p].met
+\* No shrink has been given up since the last publication or clear.
+NoShrinkGivenUp == recorded = ShrinkAny
+\* No shrink a remove asked for reaches its publication.
+NoRemoveShrinkPublished == \A p \in Workers : ~(ts[p].pc = "ZP" /\ ts[p].ret # "IW")
+\* No shrink a remove asked for finds more entries, once it holds every guard, than the remove
+\* left: an insert that lands between the ask and the copy breaks it.
+NoGrowthBeforeShrink ==
+    \A p \in Workers : ts[p].pc = "ZC" /\ ts[p].ret # "IW" => count <= ts[p].left
 NoResizeWaitsForClosure ==
     ~(ts[RZ].pc = "Z1" /\ ts[RZ].gc < tb.cap[ts[RZ].old] /\ tb.grd[ts[RZ].old][ts[RZ].gc]
       /\ \E p \in Workers : ts[p].pc = "CX" /\ ts[p].t = ts[RZ].old /\ ts[p].h = ts[RZ].gc)

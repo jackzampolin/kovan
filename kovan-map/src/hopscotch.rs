@@ -79,6 +79,8 @@ pub struct HopscotchMap<K: 'static, V: 'static, S = FixedState> {
     resizing: AtomicBool,
     /// A failed shrink retries only after half its entries have gone. Otherwise
     /// a stable, sparse map can copy the same unshrinkable table on every remove.
+    /// Modelled in `proofs/tla/hopscotch/HopscotchMap.tla` (RN, RQ, ZK, ZP, ZX);
+    /// the rule and its work bound are proved in `proofs/lean/Kovan/HopscotchShrink.lean`.
     shrink_below: AtomicUsize,
     hasher: S,
 }

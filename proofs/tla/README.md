@@ -10,7 +10,7 @@ counterexample for every one, and none for the code as built.
 |-------|------|-----|
 | `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `bash proofs/tla/run_tlc.sh reclaim` (about 37 minutes) |
 | `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `bash proofs/tla/run_tlc.sh chained` (about 23 minutes) |
-| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap | `bash proofs/tla/run_tlc.sh hopscotch` (about 12 minutes) |
+| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap, the shrink a remove asks for and its threshold (`shrink_below`) | `bash proofs/tla/run_tlc.sh hopscotch` (about 3 minutes in the recorded run) |
 
 `bash proofs/tla/run_tlc.sh all` runs every family (each directory of `proofs/tla/` with an
 `EXPECTED.txt`). The script takes the TLA+ tools from `$TLA2TOOLS` when set, otherwise from
@@ -740,15 +740,83 @@ s; it is left out of `EXPECTED.txt` for the time it would add to every run.
   displacement that loses a race, or a resize, releases the guard before the closure runs.
 - `hopscotch/resize.rs:97` `try_resize`, `:32` `hold_writers`, `:164` `copy_into`: Z0 to Z4 (every
   home guard taken, the copy into the first free slot of each entry's neighborhood, a neighborhood
-  found full doubling the new table, the replaced table's guards kept held);
+  found full doubling the new table of a grow and giving up a shrink, the replaced table's guards
+  kept held);
   `hopscotch.rs:451` `clear`: ZX.
+- The shrink a remove asks for and its threshold: `hopscotch.rs:267` `unlink_held` (`:289`, the
+  test `underfull(count, capacity) && count < shrink_below`, with `underfull` at `:61`): RN, and
+  the remove branch of CX for `remove_if` and compute, take the count down and decide whether to
+  ask (`AsksShrink`). RQ is the remove's `try_resize(capacity / 2)` once its guard is released
+  and its entry retired (`hopscotch/conditional.rs:345`, `:252`): it takes the latch, or returns
+  when a resize or a clear holds it, then runs Z1 to Z4 as any resize does and comes back to its
+  answer. `resize.rs:141` and `:158`: ZK gives up a shrink whose copy finds a neighborhood full,
+  frees the copies with the unpublished table, gives the old table's guards back and writes
+  `max(count / 2, 1)` to `shrinkBelow`; `resize.rs:148`: ZP writes "no threshold" when it
+  publishes; `hopscotch.rs:501`: ZX writes it at the end of a clear.
 
 Abstractions: a neighborhood of two slots (32 in the code) and move stamps modulo four; a
 displacement probes to the end of the padded bucket array (the code stops at 512 slots); an entry
 is freed only with its table; the latch is one boolean. `insert_if_absent` and `get_or_insert`
 first look the key up (`hopscotch.rs:398`, `:379`) and answer a key found there as a lookup does,
 before any guard is taken; the model's claims start at `insert_impl`, so that first lookup is not
-modelled.
+modelled. `MinCap` stands for `MIN_CAPACITY` (64 in the code), scaled down as the neighborhood
+is; "no threshold" (`usize::MAX`) is `ShrinkAny`, one more than the entry pool, so above every
+count. Whether a shrink fits is not chosen: the copy computes it (ZK). Every configuration that
+predates the threshold sets `MinCap` to its `MaxCap`, so no remove of its programs asks for a
+shrink, and each reaches exactly the states it reached before the threshold was modelled.
+
+### The shrink threshold, in plain words
+
+When a remove leaves the table less than a quarter full, the map tries to halve the table: it
+copies every entry into a new table of half the size. If an entry finds no free slot near its
+bucket there, the copy is thrown away and the table stays as it was. Without a threshold, the
+next remove asked for the same shrink again, and a map that stayed at the same size paid for
+the same useless copy on every remove. With it, the failed shrink writes half of its entry count
+(at least 1) to `shrink_below`, and a remove asks for a shrink again only when the count it
+leaves is below that. A resize that publishes its new table, and a clear, write "no threshold"
+back.
+
+The shrink configurations use a table of sixteen buckets with neighborhoods of two slots,
+holding keys 0 and 16 (both of bucket 0, in slots 0 and 1), 5 and 8 (`S_sparse`). Removing key
+5 leaves three entries, less than a quarter of sixteen, so the remove asks to shrink to eight
+buckets. In eight buckets keys 0, 16 and 8 all belong to bucket 0, whose neighborhood of two
+slots holds only two of them, so the copy fails and the threshold becomes 1 (three halved,
+rounded down). Inserting and removing key 5 again goes from four entries to three without
+asking; only a remove that leaves no entry (below 1) asks again, and an empty map always fits.
+
+The model keeps a history beside the code's threshold: `recorded`, what the last failed shrink
+wrote since the last publication or clear, erased by every publication and every clear whatever
+the code does. Each remove's decision is checked against it.
+
+- `NoShrinkRetry`: no remove asks for a shrink while the count it leaves is at or above what the
+  last failed shrink recorded. In plain words: once a shrink failed, the same shrink is not
+  tried again until the map has lost half of the entries it had then, so a map that keeps the
+  same size never repeats the failed copy.
+- `ShrinkReset`: the map's threshold is always exactly the history. The history is erased at
+  every publication and every clear and written only by a failed shrink, so this says that the
+  code erases its threshold at exactly those points too, and sets it nowhere else.
+- `ShrinkUnblocked`: a remove that leaves the map underfull while no shrink has failed since the
+  last publication or clear asks for a shrink. In plain words: an old failure never blocks the
+  shrink of a map that a clear emptied and that was filled again.
+
+The two mutations put back the rule as it was before:
+
+- `HS_mut_no_shrink_bound` (`Mutation = "no_shrink_bound"`): no threshold, every remove that
+  leaves the map underfull asks for a shrink. TLC's counterexample (55 states): the remove of
+  key 5 asks, the shrink fails at three entries; key 5 is inserted and removed again, and that
+  remove, at three entries again, asks for the same shrink (`NoShrinkRetry` broken). The keys
+  present are the same, so that copy would fail the same way.
+- `HS_mut_clear_keeps_bound` (`Mutation = "clear_keeps_bound"`): the threshold without the
+  clear's reset. Counterexample (103 states): the shrink fails at three entries (threshold 1);
+  the resizer clears the map; keys 1 and 2 are inserted; the remove of key 1 leaves one entry
+  of sixteen buckets, underfull, but 1 is not below the old threshold 1, so it does not ask
+  (`ShrinkUnblocked` broken). With the reset it asks, and the shrink of that one entry fits.
+
+Three witnesses show the passing configurations reach the cases that matter:
+`HS_wit_shrink_given_up` (37 states: a shrink is given up), `HS_wit_shrink_published` (122
+states: after the failed shrink at three entries, the removes down to one entry ask for
+nothing, the remove that leaves none asks, and its shrink publishes) and
+`HS_wit_shrink_after_insert` (37 states, below).
 
 ### Configurations
 
@@ -804,6 +872,16 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
 | `HS_mut_held_scan_cond` | 0.1.20's unguarded remove racing a `remove_if` whose scan under the guard loads the key's entry unprotected and whose predicate reads it later | none | `NoUseAfterFree` broken |
 | `HS_wit_reserved_meet` | witness: a lookup meets a reserved slot | none | `NoReservedMeet` broken |
 | `HS_wit_cond_resize` | witness: a resize waits for the home guard a conditional write holds while its closure decides | grow | `NoResizeWaitsForClosure` broken |
+| `HS_shrink_fail` | a remove whose shrink fails at three entries, an insert and a remove at that count, removes down to an empty map whose shrink fits (sixteen buckets, one worker) | none | pass |
+| `HS_shrink_race` | the failed shrink and an insert and a remove at its count, racing an insert of another key and a lookup | none | pass |
+| `HS_shrink_cond` | a `remove_if` whose shrink fails, a compute that inserts the key and one that removes it, racing a lookup | none | pass |
+| `HS_shrink_clear` | the failed shrink, then two inserts and a remove that leaves the map underfull, racing a clear | clear | pass |
+| `HS_shrink_live` | the programs of `HS_shrink_race`, weak fairness | none | `Termination` holds |
+| `HS_mut_no_shrink_bound` | no threshold: every remove that leaves the map underfull asks for a shrink | none | `NoShrinkRetry` broken |
+| `HS_mut_clear_keeps_bound` | a clear leaves the threshold a failed shrink wrote | clear | `ShrinkUnblocked` broken |
+| `HS_wit_shrink_given_up` | witness: a shrink whose copy does not fit is given up | none | `NoShrinkGivenUp` broken |
+| `HS_wit_shrink_published` | witness: after the failed shrink, the remove that empties the map asks, and its shrink publishes | none | `NoRemoveShrinkPublished` broken |
+| `HS_wit_shrink_after_insert` | witness: an insert lands between a remove's ask for a shrink and the shrink's copy | none | `NoGrowthBeforeShrink` broken |
 
 ### Findings
 
@@ -849,9 +927,27 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
   unlinking and retiring the entry in between, the closure reads a retired entry
   (`HS_mut_held_scan_cond`, 14 states); with the guard no other thread can.
 
+- **A failed shrink repeated on every remove** (`HS_mut_no_shrink_bound`, 55 states). With no
+  threshold, a remove at the count a shrink failed at asks for it again. Fix: a failed shrink
+  writes half its count to `shrink_below`, and a remove asks only below it. A clear that kept
+  that threshold blocked the shrink of a map refilled after the clear
+  (`HS_mut_clear_keeps_bound`, 103 states); the clear writes "no threshold" back.
+- **What the threshold bounds, and what it does not** (`HS_wit_shrink_after_insert`, 37
+  states). The threshold is checked against the count a remove leaves when it asks, not
+  against the count its copy finds: the ask and the copy are separate steps, and an insert can
+  land between them. In the witness the remove leaves three entries and asks; an insert has
+  already taken its home guard, the shrink waits for it (as every resize waits for a guard
+  holder) and copies four. So with several threads a shrink can be tried at a count above the
+  threshold, by the inserts that land between the ask and the copy. The Lean proof of the work
+  bound (`proofs/lean/Kovan/HopscotchShrink.lean`) is for one thread and does not cover this.
+
 ### TLC results
 
-The run recorded in `hopscotch/tlc-run.txt` (8 workers, beside other work on a 36-core machine): 47
-of 47 configurations match `EXPECTED.txt`; the largest passing ones are `HS_big_disp` (4,588,001
-distinct states, 574 s) and `HS_big_cond` (1,444,974, 29 s). Every configuration that passed before
-the reserved word reaches exactly the states it reached before.
+The run recorded in `hopscotch/tlc-run.txt` (TLC's automatic worker count for a passing
+configuration, one worker for a violation, beside other work on a 36-core machine): 57 of 57
+configurations match `EXPECTED.txt`, in 166 s; the largest passing ones are `HS_big_disp`
+(4,588,001 distinct states, 59 s) and `HS_big_cond` (1,444,974, 20 s). Every configuration that
+passed before the reserved word reaches exactly the states it reached before. The 47
+configurations that predate the shrink threshold reach exactly the states (generated and
+distinct) and give exactly the results recorded before the threshold was modelled (the previous
+version of `hopscotch/tlc-run.txt`).

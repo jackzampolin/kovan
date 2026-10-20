@@ -1,3 +1,5 @@
+import Kovan.HopscotchShrink
+
 /-!
 # The Lean proofs of kovan
 

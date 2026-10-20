@@ -111,6 +111,35 @@ P_cond_big == [w \in {1, 2, 3} |-> CASE w = 1 -> <<Cmp(2, Next1)>>
                                     [] w = 2 -> <<Rif(1, {1}), Iia(2, 3)>>
                                     [] w = 3 -> <<Rpi(2, 1, {1, 2}), Get(1)>>]
 
+\* ---------------------------------------------------------------- the shrink threshold
+\* Sixteen buckets (home k % 16), neighborhoods of two slots, eighteen slots with the padding:
+\* keys 0 and 16 in slots 0 and 1 (both of home 0), key 5 in slot 5, key 8 in slot 8. A table
+\* of sixteen is underfull below four entries (4 * 3 < 16) and may shrink (MinCap is 8). In a
+\* table of eight, keys 0, 16 and 8 all have home 0, and its two-slot neighborhood holds two of
+\* them: while all three are present, a shrink cannot fit, and it fails at three entries.
+S_sparse == [i \in 1..18 |-> CASE i = 1 -> <<0, 1>>
+                               [] i = 2 -> <<16, 1>>
+                               [] i = 6 -> <<5, 1>>
+                               [] i = 9 -> <<8, 1>>
+                               [] OTHER -> <<>>]
+
+\* A remove whose shrink fails at three entries (threshold 1), an insert and a remove at the same
+\* population (no shrink asked), then removes down to an empty map, whose shrink is asked for
+\* and fits.
+P_shrink_fail == [w \in {1} |-> <<Rem(5), Ins(5, 1), Rem(5), Rem(8), Rem(16), Rem(0)>>]
+\* The same failed shrink and churn racing an insert of another key and a lookup.
+P_shrink_race == [w \in {1, 2} |-> IF w = 1 THEN <<Rem(5), Ins(5, 1), Rem(5)>>
+                                            ELSE <<Ins(1, 1), Get(8)>>]
+\* A remove_if whose shrink fails, then a compute that inserts the key and one that removes it
+\* (no shrink asked), racing a lookup.
+P_shrink_cond == [w \in {1, 2} |-> IF w = 1 THEN <<Rif(5, {1}), Cmp(5, Flip), Cmp(5, Flip)>>
+                                            ELSE <<Get(16)>>]
+\* A remove whose shrink fails, then (after the resizer's clear, at any point) two inserts and a
+\* remove that leaves one entry: underfull, so after the clear it asks for a shrink, which fits.
+P_shrink_clear == [w \in {1} |-> <<Rem(5), Ins(1, 1), Ins(2, 1), Rem(1)>>]
+\* A remove that asks for a shrink racing an insert of another key.
+P_shrink_insert == [w \in {1, 2} |-> IF w = 1 THEN <<Rem(5)>> ELSE <<Ins(1, 1)>>]
+
 \* Only the reader (worker 2) is scheduled fairly: a writer may stop anywhere, holding a home
 \* guard or in the middle of a move, and the reader must still end (lookups and walks take no
 \* guard and wait for nobody).

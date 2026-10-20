@@ -17,6 +17,20 @@ writes it down step by step (`tla/hopscotch/HS_mut_unguarded_remove_counterexamp
 The code now holds the bucket's writer guard for the whole remove, and the same check finds
 no bad order for it.
 
+A second example, checked by both tools below. A hopscotch map with room for 256 entries
+holds 40, and a remove leaves 39. That is less than a quarter full, so the map tries to halve
+its table: it copies the entries into a table of 128 buckets. Say the keys are such that all
+39 want to sit near the same bucket there, where only 32 slots are near enough: the copy finds
+an entry it cannot place and is thrown away. It cloned up to 39 entries for nothing. The code
+used to try again on the very next remove, and fail again, so a map that kept going up and
+down between 39 and 40 entries copied up to 39 entries on every remove. Now the failed shrink
+writes down 19 (half of 39) and no remove tries again until fewer than 19 entries are left; a
+resize that succeeds, or a clear, erases what was written. The Lean proof shows that between
+two such erasures, all failed shrinks together copy fewer than 2 * 39 = 78 entries, whatever
+the operations; the TLA+ model checks the same rule with several threads at once, and keeps
+the two older versions of the rule (no threshold at all, and a clear that keeps the threshold)
+as mutations that it must catch.
+
 Two tools do the checking, and kovan uses them together. TLA+ looks at many threads at once,
 but only for small sizes. Lean looks at one thread at a time, but for every size and every
 sequence of operations.
@@ -63,5 +77,12 @@ CI runs the same (`.github/workflows/lean.yml`).
   the conditional writes, the freezing migration and clear), 44 configurations: 26 that must
   pass and 18 that must fail.
 - `tla/hopscotch/`: `kovan_map::HopscotchMap` (the guarded insert and remove, displacement, the
-  conditional writes, the lookup's rescan, resize, clear, the walk across a table swap), 47
-  configurations: 28 that must pass and 19 that must fail.
+  conditional writes, the lookup's rescan, resize, clear, the walk across a table swap, the
+  shrink a remove asks for and its threshold), 57 configurations: 33 that must pass and 24
+  that must fail.
+- `lean/Kovan/HopscotchShrink.lean`: the hopscotch map's shrink threshold, for one thread and
+  every sequence of operations: a successful resize and a clear erase it; after a failed shrink
+  at `c` entries no shrink is asked for while `max (c / 2) 1` entries or more remain, and the
+  first remove below that while the map is underfull asks; between two erasures each failed
+  shrink is at fewer than half the entries of the one before, and all of them copy fewer than
+  twice the entries of the first.
