@@ -25,11 +25,15 @@ an entry it cannot place and is thrown away. It cloned up to 39 entries for noth
 used to try again on the very next remove, and fail again, so a map that kept going up and
 down between 39 and 40 entries copied up to 39 entries on every remove. Now the failed shrink
 writes down 19 (half of 39) and no remove tries again until fewer than 19 entries are left; a
-resize that succeeds, or a clear, erases what was written. The Lean proof shows, for one
-thread doing one operation at a time, that between two such erasures all failed shrinks
-together copy fewer than 2 * 39 = 78 entries, whatever the operations; the TLA+ model checks the same rule with several threads at once, and keeps
-the two older versions of the rule (no threshold at all, and a clear that keeps the threshold)
-as mutations that it must catch.
+resize that succeeds, or a clear, erases what was written. The Lean proofs show that between
+two such erasures, for one thread doing one operation at a time, all failed shrinks together
+copy fewer than 2 * 39 = 78 entries, whatever the operations. With several threads that is
+not quite true: inserts can land between a remove's request and its copy, and two removes can
+both ask before either shrink fails. What holds there, also proved, is a bound per thread:
+each thread's failed copies add up to less than twice its first one plus twice the inserts
+after it. The TLA+ model checks the rule and that bound with several threads at once, and
+keeps the two older versions of the rule (no threshold at all, and a clear that keeps the
+threshold) as mutations that it must catch.
 
 Two tools do the checking, and kovan uses them together. TLA+ looks at many threads at once,
 but only for small sizes. Lean looks at one thread at a time, but for every size and every
@@ -78,11 +82,16 @@ Lean: install elan once (`proofs/lean/README.md` says how). The recipes run
   pass and 18 that must fail.
 - `tla/hopscotch/`: `kovan_map::HopscotchMap` (the guarded insert and remove, displacement, the
   conditional writes, the lookup's rescan, resize, clear, the walk across a table swap, the
-  shrink a remove asks for and its threshold), 57 configurations: 33 that must pass and 24
-  that must fail.
+  shrink a remove asks for, its threshold and the work of failed shrinks per thread), 61
+  configurations: 35 that must pass and 26 that must fail.
 - `lean/Kovan/HopscotchShrink.lean`: the hopscotch map's shrink threshold, for one thread and
   every sequence of operations: a successful resize and a clear erase it; after a failed shrink
   at `c` entries, until the next erasure, no shrink is asked for while `max (c / 2) 1` entries
   or more remain, and the first remove below that while the map is underfull asks; between two erasures each failed
   shrink is at fewer than half the entries of the one before, and all of them copy fewer than
   twice the entries of the first.
+- `lean/Kovan/HopscotchShrinkThreads.lean`: the same threshold when threads interleave in any
+  order: each thread's failed copies add up to less than twice its first plus twice the
+  inserts after it, and all failed copies together to at most `W * (2 * (n + I) + 2 * I)` for
+  `W` threads making them, `n` entries at the start and `I` inserts; a concrete run shows two
+  threads failing at the same count.

@@ -1,4 +1,5 @@
 import Kovan.HopscotchShrink
+import Kovan.HopscotchShrinkThreads
 
 /-!
 # The Lean proofs of kovan

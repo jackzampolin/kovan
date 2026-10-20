@@ -819,6 +819,39 @@ states: after the failed shrink at three entries, the removes down to one entry 
 nothing, the remove that leaves none asks, and its shrink publishes) and
 `HS_wit_shrink_after_insert` (37 states, below).
 
+#### The work of failed shrinks, with several threads
+
+Each failed shrink cloned up to as many entries as the map held: that is the work the
+threshold exists to bound. With several threads two things make the work larger than the
+threshold alone suggests, and the model shows both: an insert can land between a remove's ask
+and its copy (`HS_wit_shrink_after_insert`), and two removes can both ask before either shrink
+has failed, so the second shrink runs on an old ask and fails at the same count as the first
+(`HS_wit_shrink_stale_ask`, 85 states: worker 1 removes key 5, leaving three entries, and
+asks; worker 2 inserts key 1 and starts removing it, taking its bucket's guard; worker 1's
+shrink starts and waits for that guard while worker 2 finishes the remove, leaving three
+entries, and asks too, since no threshold exists yet; worker 1's copy fails at three and
+writes the threshold 1; then worker 2's shrink runs and its copy fails at three as well,
+above that threshold).
+
+What still holds is a bound per worker, the one proved in
+`proofs/lean/Kovan/HopscotchShrinkThreads.lean` (`thread_failed_copies_lt_after`). The model
+keeps a history, `work`, of every worker's failed copies since the last publication or clear:
+the count of its first failed copy, the total of all of them, and the entries counted in
+(inserts) since that first one.
+
+- `ShrinkWorkBound`: each worker's failed copies add up to less than twice its first failed
+  copy plus twice the inserts since that first one. In plain words: once a worker has paid
+  for one failed copy, the rest of its failed copies cost less than that much again, plus two
+  entries for every entry inserted meanwhile, so the work grows with the inserts, never with
+  the removes. In `HS_shrink_two` both workers' shrinks fail at three entries, and each worker
+  stays within its own bound (3 < 2 * 3).
+- `HS_mut_no_shrink_bound_work` (`Mutation = "no_shrink_bound"`, the code without the
+  threshold): key 5 is removed, inserted and removed again, four times. Every remove asks, and
+  every shrink fails at three entries: four failed copies of 3 entries with three inserts
+  between them, 12 entries cloned, not below 2 * 3 + 2 * 3 = 12 (`ShrinkWorkBound` broken,
+  181 states). With the threshold (`HS_shrink_churn`, the same program) only the first remove
+  asks and the bound holds.
+
 ### Configurations
 
 Two buckets (homes `k % 2`, neighborhoods of two slots, four slots with the padding) grown to
@@ -883,6 +916,10 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
 | `HS_wit_shrink_given_up` | witness: a shrink whose copy does not fit is given up | none | `NoShrinkGivenUp` broken |
 | `HS_wit_shrink_published` | witness: after the failed shrink, the remove that empties the map asks, and its shrink publishes | none | `NoRemoveShrinkPublished` broken |
 | `HS_wit_shrink_after_insert` | witness: an insert lands between a remove's ask for a shrink and the shrink's copy | none | `NoGrowthBeforeShrink` broken |
+| `HS_shrink_churn` | a remove whose shrink fails at three entries, then key 5 inserted and removed three more times at that count | none | pass |
+| `HS_shrink_two` | two removers that can both ask for a shrink before either fails | none | pass |
+| `HS_mut_no_shrink_bound_work` | no threshold, the program of `HS_shrink_churn` | none | `ShrinkWorkBound` broken |
+| `HS_wit_shrink_stale_ask` | witness: a worker's shrink runs on an ask made before another worker's shrink failed, at or above the threshold that failure wrote | none | `NoStaleShrink` broken |
 
 ### Findings
 
@@ -934,21 +971,28 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
   that threshold blocked the shrink of a map refilled after the clear
   (`HS_mut_clear_keeps_bound`, 103 states); the clear writes "no threshold" back.
 - **What the threshold bounds, and what it does not** (`HS_wit_shrink_after_insert`, 37
-  states). The threshold is checked against the count a remove leaves when it asks, not
-  against the count its copy finds: the ask and the copy are separate steps, and an insert can
-  land between them. In the witness the remove leaves three entries and asks; an insert has
-  already taken its home guard, the shrink waits for it (as every resize waits for a guard
-  holder), and once it holds every guard the table it is about to copy holds four. So with several threads a shrink can be tried at a count above the
-  threshold, by the inserts that land between the ask and the copy. The Lean proof of the work
-  bound (`proofs/lean/Kovan/HopscotchShrink.lean`) is for one thread and does not cover this.
+  states; `HS_wit_shrink_stale_ask`, 85 states). The threshold is checked against the count a
+  remove leaves when it asks, not against the count its copy finds: the ask and the copy are
+  separate steps. An insert can land between them: in `HS_wit_shrink_after_insert` the remove
+  leaves three entries and asks; an insert has already taken its home guard, the shrink waits
+  for it (as every resize waits for a guard holder), and once it holds every guard the table it
+  is about to copy holds four. And another remove can ask before the first shrink fails, so a
+  failed copy can be repeated at the same count once by every thread that had already asked
+  (`HS_wit_shrink_stale_ask`). So with several threads the halving of the one-thread proof
+  (`proofs/lean/Kovan/HopscotchShrink.lean`) does not hold. What holds is the bound per thread
+  proved in `proofs/lean/Kovan/HopscotchShrinkThreads.lean` and checked here as
+  `ShrinkWorkBound`: each thread's failed copies stay below twice its first plus twice the
+  inserts after it, so all of them together grow with the number of threads and the inserts,
+  never with the removes.
 
 ### TLC results
 
 The run recorded in `hopscotch/tlc-run.txt` (TLC's automatic worker count for a passing
-configuration, one worker for a violation, beside other work on a 36-core machine): 57 of 57
-configurations match `EXPECTED.txt`, in 166 s; the largest passing ones are `HS_big_disp`
-(4,588,001 distinct states, 59 s) and `HS_big_cond` (1,444,974, 20 s). Every configuration that
+configuration, one worker for a violation, beside other work on a 36-core machine): 61 of 61
+configurations match `EXPECTED.txt`, in 511 s; the largest passing ones are `HS_big_disp`
+(4,588,001 distinct states, 176 s) and `HS_big_cond` (1,444,974, 55 s). Every configuration that
 passed before the reserved word reaches exactly the states it reached before. The 47
 configurations that predate the shrink threshold reach exactly the states (generated and
-distinct) and give exactly the results recorded before the threshold was modelled (the previous
-version of `hopscotch/tlc-run.txt`).
+distinct) and give exactly the results recorded before the threshold was modelled, and the 57
+that predate the work history (`work`) exactly those recorded before it was added (earlier
+versions of `hopscotch/tlc-run.txt`).

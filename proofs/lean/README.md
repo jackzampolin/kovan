@@ -39,10 +39,41 @@ A `HopscotchMap` keeps its entries in a table of buckets. Take a table of 256 bu
    succeeds or the map is cleared.
 
 `Kovan/HopscotchShrink.lean` proves steps 4 and 5 (the code as it is now; step 3 is the old
-code, which it does not model) for every sequence of inserts, removes, grows and clears, and for every outcome of every shrink (it does not place entries in buckets, so
-the outcome of each shrink is left open: fits or does not fit, except that an empty map always
-fits). It does not prove step 2 (which keys fit where), and it does not model threads: the
-TLA+ model in `../tla/hopscotch` checks the same rule with several threads, for small tables.
+code, which it does not model) for every sequence of inserts, removes, grows and clears, and
+for every outcome of every shrink (it does not place entries in buckets, so the outcome of
+each shrink is left open: fits or does not fit, except that an empty map always fits). It does
+not prove step 2 (which keys fit where), and it is about one thread doing one operation at a
+time.
+
+### With several threads
+
+With several threads, step 5 is not true as stated, for two reasons, and
+`Kovan/HopscotchShrinkThreads.lean` proves what is true instead.
+
+- A remove asks for its shrink first and the shrink copies the map a moment later, after the
+  remove has let go of its bucket. Inserts by other threads can land in between: the remove
+  left 3 entries, the copy finds 4.
+- Two threads can each remove an entry and each ask before either shrink has run. The first
+  shrink fails and writes its threshold, but the second thread asked before that threshold
+  existed, so its shrink runs too and fails at the same count. The file checks a run where
+  this happens (`two_threads_fail_at_the_same_count`).
+
+What holds is a rule per thread: each thread's failed copies add up to less than twice its
+first failed copy plus twice the number of inserts after it. A thread whose first failed copy
+is at 39, with 10 inserts after it, clones fewer than 2 * 39 + 2 * 10 = 98 entries in all its
+failed copies. Adding up the threads: all failed copies together are at most the number of
+threads that made one, times twice the most entries the map can hold in the run (the count at
+the start plus the inserts) plus twice the inserts. With 4 threads, 40 entries at the start
+and 10 inserts, that is at most 4 * (2 * 50 + 2 * 10) = 480 entries, until a resize succeeds
+or the map is cleared. Before the threshold there was no such bound at all: the total grew
+with every remove.
+
+The model there lets the steps of all threads come in any order, lets a remove ask whenever
+the threshold allows (the code also needs the table underfull), and includes a failed resize
+that no remove asked for (an insert's grow whose table another grow had already replaced by a
+larger one). That last kind writes the threshold like any failed shrink but is not counted in
+the bound: no threshold holds it back. The TLA+ model in `../tla/hopscotch` checks the per
+thread rule, as `ShrinkWorkBound`, in its configurations with several threads.
 
 ## What is proved
 
@@ -67,8 +98,25 @@ for fits), a grow and a clear.
 | `failed_shrinks_halve` | between two erasures, each failed shrink happens at fewer than half the entries of the one before |
 | `failed_shrink_copies_below_twice_first` | between two erasures, the failed shrinks together happened at fewer than twice the entries of the first one, so they clone fewer than that many entries in total |
 
-The file explains every definition and every proof step in plain words, with a small example
-for each statement.
+`Kovan/HopscotchShrinkThreads.lean`, the same rule when threads interleave: a state is the
+count, the threshold and, for each thread, whether it asked for a shrink that has not run yet;
+the events are an insert, a remove by a thread (which may ask), a thread's shrink whose copy
+fails, a thread's shrink skipped because another resize holds the `resizing` flag, and a failed
+resize no remove asked for. The theorems are about any run between two erasures.
+
+| theorem | what it says |
+|---------|--------------|
+| `two_threads_fail_at_the_same_count` | a concrete run where two threads' shrinks both fail at the same count, so the one-thread halving rule does not hold across threads |
+| `thread_failed_copies_lt_after` | each thread's failed copies add up to less than twice its first failed copy plus twice the inserts after that first one |
+| `thread_failed_copies_lt` | the same, with all the inserts of the run |
+| `failuresOf_le` | every failed copy is at most the count at the start plus the inserts of the run |
+| `total_le_sum_threads` | all failed copies together are at most the sum, over a list of threads covering them, of each thread's failed copies |
+| `failed_copies_le` | all failed copies together are at most the number of threads that made one, times twice (the count at the start plus the inserts) plus twice the inserts |
+| `one_thread_failed_copies_lt` | when one thread makes all the failed copies, they add up to less than twice the first one plus twice the inserts |
+
+Both files explain every definition and every proof step in plain words, with a small example
+for each statement. `#print axioms` on every theorem lists only Lean's standard axioms
+(`propext`, `Classical.choice`, `Quot.sound`), or none.
 
 ## How to check it
 

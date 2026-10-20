@@ -56,3 +56,7 @@ HS_mut_clear_keeps_bound           MC_HopscotchMap    violated:ShrinkUnblocked
 HS_wit_shrink_after_insert         MC_HopscotchMap    violated:NoGrowthBeforeShrink
 HS_wit_shrink_given_up             MC_HopscotchMap    violated:NoShrinkGivenUp
 HS_wit_shrink_published            MC_HopscotchMap    violated:NoRemoveShrinkPublished
+HS_shrink_churn                    MC_HopscotchMap    pass
+HS_shrink_two                      MC_HopscotchMap    pass
+HS_mut_no_shrink_bound_work        MC_HopscotchMap    violated:ShrinkWorkBound
+HS_wit_shrink_stale_ask            MC_HopscotchMap    violated:NoStaleShrink

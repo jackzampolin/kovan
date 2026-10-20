@@ -139,6 +139,16 @@ P_shrink_cond == [w \in {1, 2} |-> IF w = 1 THEN <<Rif(5, {1}), Cmp(5, Flip), Cm
 P_shrink_clear == [w \in {1} |-> <<Rem(5), Ins(1, 1), Ins(2, 1), Rem(1)>>]
 \* A remove that asks for a shrink racing an insert of another key.
 P_shrink_insert == [w \in {1, 2} |-> IF w = 1 THEN <<Rem(5)>> ELSE <<Ins(1, 1)>>]
+\* A remove whose shrink fails at three entries, then key 5 inserted and removed three more
+\* times: each of those removes leaves three entries again (no shrink asked, with the threshold).
+P_shrink_churn == [w \in {1} |-> <<Rem(5), Ins(5, 1), Rem(5), Ins(5, 1), Rem(5), Ins(5, 1),
+                                    Rem(5)>>]
+\* Two removers: worker 1 removes key 5 (three entries left: it asks), worker 2 inserts key 1
+\* and removes it (three entries left again: it asks too when worker 1's shrink has not failed
+\* yet), and worker 1 then inserts and removes key 5 again. Both shrinks can fail at the same
+\* count, the second on an ask made before the first failed.
+P_shrink_two == [w \in {1, 2} |-> IF w = 1 THEN <<Rem(5), Ins(5, 1), Rem(5)>>
+                                           ELSE <<Ins(1, 1), Rem(1)>>]
 
 \* Only the reader (worker 2) is scheduled fairly: a writer may stop anywhere, holding a home
 \* guard or in the middle of a move, and the reader must still end (lookups and walks take no

@@ -79,6 +79,14 @@ ShrinkAny == MaxEntries + 1
 \* `underfull` (hopscotch.rs): fewer than a quarter of the buckets hold an entry, in a table
 \* bigger than the smallest.
 Underfull(n, c) == 4 * n < c /\ c > MinCap
+\* No failed copy yet since the last publication or clear: every worker's history is empty.
+NoWork == [first |-> [q \in Workers |-> 0], sum |-> [q \in Workers |-> 0],
+           ins |-> [q \in Workers |-> 0]]
+\* An entry was counted in (an insert landed): one more insert after the first failed copy of
+\* every worker that has made one. A worker with none counts nothing yet, so a configuration
+\* where no shrink fails never moves this history.
+CountedIn(w) == [w EXCEPT !.ins = [q \in Workers |-> IF w.first[q] > 0 THEN w.ins[q] + 1
+                                                    ELSE w.ins[q]]]
 
 VARIABLES
     ent,    \* entries: [st, key, val]
@@ -92,12 +100,16 @@ VARIABLES
     prot,   \* entries each thread's guard protects
     ts,     \* threads
     shrinkBelow, \* `shrink_below`: a remove asks for a shrink only below it (ShrinkAny: always)
-    recorded     \* history: what the last failed shrink since the last published resize or
+    recorded,    \* history: what the last failed shrink since the last published resize or
                  \* clear wrote (ShrinkAny when none did), whatever the code does with it
+    work         \* history of the failed copies since the last publication or clear, per
+                 \* worker: `first` its first failed copy's count (0: none yet), `sum` the
+                 \* counts of all its failed copies, `ins` the entries counted in since `first`
 
-vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts, shrinkBelow, recorded>>
-\* The threshold and its history, which only a failed shrink, a publication and a clear write.
-Thresholds == <<shrinkBelow, recorded>>
+vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts, shrinkBelow, recorded, work>>
+\* The threshold and its histories. Only a failed shrink, a publication and a clear write them,
+\* except `work.ins`, which an entry counted in (ICnt, CX) also moves.
+Thresholds == <<shrinkBelow, recorded, work>>
 
 InitEntry(i) == Len(InitSlots[i + 1]) = 2
 InitIds == {i \in 0..(Len(InitSlots) - 1) : InitEntry(i)}
@@ -146,7 +158,7 @@ Idle == [pc |-> "next", i |-> 1, t |-> 0, h |-> 0, hw |-> [hops |-> {}, stamp |-
          ycnt |-> [k \in Keys |-> 0], yv |-> {}, old |-> 0, nt |-> 0, j |-> 1, gc |-> 0,
          rsc |-> FALSE, skp |-> FALSE, rk |-> "none", rc |-> 0, ce |-> 0, rd |-> [o \in Offs |-> 0],
          dec |-> "none", saw |-> None, nv |-> None, runs |-> 0, pre |-> None, rsv |-> FALSE,
-         met |-> FALSE, shr |-> FALSE, left |-> 0, ret |-> "IW"]
+         met |-> FALSE, shr |-> FALSE, left |-> 0, ret |-> "IW", stale |-> FALSE]
 
 Go(p, lbl) == [ts EXCEPT ![p].pc = lbl]
 
@@ -170,6 +182,7 @@ Init ==
     /\ ts = [p \in Procs |-> Idle]
     /\ shrinkBelow = ShrinkAny   \* `with_capacity_and_hasher` starts with `usize::MAX`
     /\ recorded = ShrinkAny
+    /\ work = NoWork
 
 \* ---------------------------------------------------------------- dispatch
 
@@ -495,8 +508,10 @@ DL(p) ==
 ICnt(p) ==
     /\ ts[p].pc = "ICnt"
     /\ count' = IF ts[p].cnt THEN count ELSE count + 1
+    \* The insert's entry counted in: one more insert for the work history.
+    /\ work' = IF ts[p].cnt THEN work ELSE CountedIn(work)
     /\ ts' = [ts EXCEPT ![p].cnt = TRUE, ![p].pc = "IR"]
-    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, Thresholds>>
+    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, shrinkBelow, recorded>>
 
 \* Release the home guard: the staged bits published; a linked entry becomes visible here.
 IR(p) ==
@@ -886,7 +901,10 @@ CX(p) ==
                                      ![p].pc = "CR"]
                  /\ err' = exact
                  /\ UNCHANGED <<ent, tb, count, abs, hist>>
-    /\ UNCHANGED <<cur, latch, prot, Thresholds>>
+    \* A compute that fills its reservation counts an entry in: one more insert for the work
+    \* history (a replace or a removal counts none in).
+    /\ work' = IF count' = count + 1 THEN CountedIn(work) ELSE work
+    /\ UNCHANGED <<cur, latch, prot, shrinkBelow, recorded>>
 
 \* Release the home guard, publishing the word as the writer staged it.
 CR(p) ==
@@ -1049,7 +1067,18 @@ ZK(p) ==
                           /\ tb' = [tb EXCEPT !.st[nt] = "unused", !.grd[old] = [h \in Homes |-> FALSE]]
                           /\ shrinkBelow' = Max2(count \div 2, 1)
                           /\ recorded' = Max2(count \div 2, 1)
-                          /\ ts' = Go(p, "Z4")
+                          \* A shrink a worker's remove asked for (ret is its answer, not "IW"):
+                          \* its failed copy of `count` entries goes into that worker's work
+                          \* history, and `stale` notes a copy at or above what the previous
+                          \* failed copy recorded (an ask made before that failure).
+                          /\ work' = IF p \in Workers /\ ts[p].ret # "IW"
+                                     THEN [work EXCEPT !.first[p] = IF @ = 0 THEN count ELSE @,
+                                                       !.sum[p] = @ + count]
+                                     ELSE work
+                          /\ ts' = [ts EXCEPT ![p].pc = "Z4",
+                                              ![p].stale = @ \/ (p \in Workers /\ ts[p].ret # "IW"
+                                                                /\ recorded # ShrinkAny
+                                                                /\ count >= recorded)]
                           /\ UNCHANGED err
                      ELSE IF FreeEnts = {} \/ 2 * tb.cap[nt] > MaxCap
                      THEN /\ err' = Fail("copy_bound")
@@ -1069,6 +1098,7 @@ ZP(p) ==
     /\ cur' = ts[p].nt
     /\ shrinkBelow' = ShrinkAny
     /\ recorded' = ShrinkAny
+    /\ work' = NoWork      \* the histories start again after a publication
     /\ ts' = Go(p, "Z4")
     /\ UNCHANGED <<ent, latch, count, abs, hist, err, prot>>
 
@@ -1087,6 +1117,7 @@ ZX(p) ==
                \* "clear_keeps_bound" (the threshold without this reset): the clear leaves it.
                /\ shrinkBelow' = IF Mutation = "clear_keeps_bound" THEN shrinkBelow ELSE ShrinkAny
                /\ recorded' = ShrinkAny
+               /\ work' = NoWork      \* and after a clear
                /\ ts' = Go(p, "Z4")
                /\ UNCHANGED <<ent, abs, hist>>
           ELSE LET e == tb.slot[old][i]
@@ -1190,6 +1221,12 @@ ShrinkReset == shrinkBelow = recorded
 \* ShrinkUnblocked: with no failed shrink since the last publication or clear (after a clear,
 \* say), a remove that leaves the map underfull asks for a shrink.
 ShrinkUnblocked == err # "shrink_blocked"
+\* ShrinkWorkBound: since the last publication or clear, the failed copies of the shrinks each
+\* worker's removes asked for add up to less than twice that worker's first failed copy plus
+\* twice the entries counted in after it (the bound proved in
+\* proofs/lean/Kovan/HopscotchShrinkThreads.lean, `thread_failed_copies_lt_after`).
+ShrinkWorkBound ==
+    \A q \in Workers : work.sum[q] = 0 \/ work.sum[q] < 2 * work.first[q] + 2 * work.ins[q]
 
 \* ---------------------------------------------------------------- witnesses
 NoMove == \A p \in Workers : ts[p].pc # "M3"
@@ -1199,6 +1236,9 @@ NoResizeWaitsForWriter ==
 NoHeldHomeSkip == \A p \in Workers : ~(ts[p].pc = "D2" /\ ts[p].con)
 NoWalkSkip == \A p \in Workers : ~ts[p].skp
 NoReservedMeet == \A p \in Workers : ~ts[p].met
+\* No worker's failed copy is at or above what the previous failed copy recorded: none ran on
+\* an ask made before that failure.
+NoStaleShrink == \A q \in Workers : ~ts[q].stale
 \* No shrink has been given up since the last publication or clear.
 NoShrinkGivenUp == recorded = ShrinkAny
 \* No shrink a remove asked for reaches its publication.
