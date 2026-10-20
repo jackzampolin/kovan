@@ -496,6 +496,9 @@ where
         }
 
         self.count.store(0, Ordering::Release);
+        // The entries whose homes kept a shrink from fitting are gone, so a
+        // failed shrink no longer says anything about the next population.
+        self.shrink_below.store(usize::MAX, Ordering::Relaxed);
         Self::release_writers(table);
         self.resizing.store(false, Ordering::Release);
     }

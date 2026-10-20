@@ -1121,3 +1121,35 @@ fn a_failed_shrink_does_not_recopy_the_table_on_every_remove() {
         assert!(map.contains_key(&(i * 256 + 128)));
     }
 }
+
+/// A clear removes the entries a failed shrink recorded its threshold for, so
+/// the next population shrinks as soon as it is underfull, not only once it
+/// falls below half the old failed attempt.
+#[test]
+fn a_clear_forgets_a_failed_shrink() {
+    let map = HopscotchMap::with_capacity_and_hasher(256, Identity);
+    for i in 0..20u64 {
+        map.insert(i * 256, i);
+        map.insert(i * 256 + 128, i);
+    }
+    map.remove(&0);
+    assert_eq!(
+        map.capacity(),
+        256,
+        "two homes that fold into one cannot shrink"
+    );
+    map.clear();
+    // One home of 30 entries: it fits a neighborhood at half the capacity.
+    for i in 0..30u64 {
+        map.insert(i * 256 + 1, i);
+    }
+    map.remove(&1);
+    assert!(
+        map.capacity() < 256,
+        "an underfull population that fits shrinks after a clear"
+    );
+    assert_eq!(map.len(), 29);
+    for i in 1..30u64 {
+        assert!(map.contains_key(&(i * 256 + 1)));
+    }
+}
