@@ -1071,3 +1071,53 @@ fn a_held_scan_holds_off_every_writer_that_could_retire_an_entry_it_read() {
 }
 
 mod conditional;
+
+/// Two homes that fold into one cannot shrink until their combined population
+/// fits one neighborhood. Churn at the same population must not copy them again.
+#[test]
+fn a_failed_shrink_does_not_recopy_the_table_on_every_remove() {
+    use alloc::sync::Arc;
+    use core::sync::atomic::AtomicUsize;
+
+    struct Counted(Arc<AtomicUsize>);
+    impl Clone for Counted {
+        fn clone(&self) -> Self {
+            self.0.fetch_add(1, Ordering::Relaxed);
+            Self(Arc::clone(&self.0))
+        }
+    }
+
+    let clones = Arc::new(AtomicUsize::new(0));
+    let map = HopscotchMap::with_capacity_and_hasher(256, Identity);
+    for i in 0..20u64 {
+        map.insert(i * 256, Counted(Arc::clone(&clones)));
+        map.insert(i * 256 + 128, Counted(Arc::clone(&clones)));
+    }
+    map.remove(&0);
+    assert_eq!(map.capacity(), 256);
+    assert!(clones.load(Ordering::Relaxed) > 1, "first shrink attempted");
+    clones.store(0, Ordering::Relaxed);
+    for i in 20..28u64 {
+        let key = i * 256;
+        map.insert(key, Counted(Arc::clone(&clones)));
+        map.remove(&key);
+    }
+    assert_eq!(
+        clones.load(Ordering::Relaxed),
+        8,
+        "only removed values cloned"
+    );
+    for i in 1..20u64 {
+        map.remove(&(i * 256));
+    }
+    map.remove(&128);
+    map.remove(&(256 + 128));
+    assert!(
+        map.capacity() < 256,
+        "a smaller population retries the shrink"
+    );
+    assert_eq!(map.len(), 18);
+    for i in 2..20u64 {
+        assert!(map.contains_key(&(i * 256 + 128)));
+    }
+}

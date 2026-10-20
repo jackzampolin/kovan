@@ -77,6 +77,9 @@ pub struct HopscotchMap<K: 'static, V: 'static, S = FixedState> {
     count: CachePadded<AtomicUsize>,
     /// Prevents concurrent writes during resize migration to avoid lost updates
     resizing: AtomicBool,
+    /// A failed shrink retries only after half its entries have gone. Otherwise
+    /// a stable, sparse map can copy the same unshrinkable table on every remove.
+    shrink_below: AtomicUsize,
     hasher: S,
 }
 
@@ -120,6 +123,7 @@ impl<K: 'static, V: 'static, S> HopscotchMap<K, V, S> {
             table: Atomic::new(Box::into_raw(Box::new(table))),
             count: CachePadded::new(AtomicUsize::new(0)),
             resizing: AtomicBool::new(false),
+            shrink_below: AtomicUsize::new(usize::MAX),
             hasher,
         }
     }
@@ -281,7 +285,9 @@ where
         // guard, this one included), so the count is at least one here.
         let prev = self.count.fetch_sub(1, Ordering::Relaxed);
         debug_assert!(prev > 0, "an unlinked entry was never counted");
-        underfull(prev - 1, table.capacity).then_some(table.capacity / 2)
+        let count = prev - 1;
+        (underfull(count, table.capacity) && count < self.shrink_below.load(Ordering::Relaxed))
+            .then_some(table.capacity / 2)
     }
 
     /// The one write path of `insert`, `insert_if_absent` and `get_or_insert`: link the key's

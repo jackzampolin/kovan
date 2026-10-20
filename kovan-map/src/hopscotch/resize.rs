@@ -145,6 +145,7 @@ where
 
         match published {
             Some(new_table) => {
+                self.shrink_below.store(usize::MAX, Ordering::Relaxed);
                 self.table
                     .store(unsafe { Shared::from_raw(new_table) }, Ordering::Release);
                 // The replaced table keeps its writer guards held: a writer that
@@ -153,7 +154,13 @@ where
                 unsafe { retire(old_table_ptr.as_raw()) };
             }
             // The old table stays live, so its writers get their guards back.
-            None => Self::release_writers(old_table),
+            None => {
+                self.shrink_below.store(
+                    (self.count.load(Ordering::Relaxed) / 2).max(1),
+                    Ordering::Relaxed,
+                );
+                Self::release_writers(old_table);
+            }
         }
 
         self.resizing.store(false, Ordering::Release);
