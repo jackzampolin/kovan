@@ -260,8 +260,9 @@ nothing still exits 0 and would otherwise read as a pass.
 ## Proofs
 
 The memory reclamation protocol and both maps are modelled in TLA+ at the grain of their atomic
-steps and model-checked with TLC, in CI and locally. [`proofs/README.md`](proofs/README.md) says
-what each model checks and how to run it.
+steps and model-checked with TLC, and `proofs/lean` is the Lean 4 project for proofs of the
+code's arithmetic properties. CI runs both. [`proofs/README.md`](proofs/README.md) says what each
+checks and how to run it.
 
 ## License
 

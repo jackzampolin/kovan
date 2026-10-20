@@ -17,20 +17,25 @@ writes it down step by step (`tla/hopscotch/HS_mut_unguarded_remove_counterexamp
 The code now holds the bucket's writer guard for the whole remove, and the same check finds
 no bad order for it.
 
+Two tools do the checking, and kovan uses them together. TLA+ looks at many threads at once,
+but only for small sizes. Lean looks at one thread at a time, but for every size and every
+sequence of operations.
+
 What a check covers is said with it, and nothing beyond: a model checker run covers every
 order of steps for the sizes its configuration sets (a few threads, keys and buckets), not
-every size.
+every size; a Lean proof covers every size, for its one-thread model of the code.
 
-## The tool
+## The tools
 
 | tool | what it checks in kovan | how far a check goes |
 |------|-------------------------|----------------------|
-| TLA+, checked by TLC | concurrent interleavings: the memory reclamation protocol of `kovan`, and the atomic steps of both maps of `kovan-map` (one step of the model is one atomic step of the code) | every order of every thread's steps, for the threads, keys, buckets and programs each configuration sets |
+| TLA+, checked by TLC (`tla/`) | concurrent interleavings: the memory reclamation protocol of `kovan`, and the atomic steps of both maps of `kovan-map` (one step of the model is one atomic step of the code) | every order of every thread's steps, for the threads, keys, buckets and programs each configuration sets |
+| Lean 4 (`lean/`) | functional and arithmetic properties, such as thresholds and bounds on the work a sequence of operations causes | every input and every sequence of operations, for a one-thread model of the code |
 
-## How to run it
+## How to run them
 
-The models need Java on `PATH` (CI uses Java 21). The runner fetches the pinned TLA+ tools on
-first use.
+TLA+: the models need Java on `PATH` (CI uses Java 21). The runner fetches the pinned TLA+
+tools on first use.
 
 ```sh
 bash proofs/tla/run_tlc.sh hopscotch    # one family: every configuration in proofs/tla/hopscotch
@@ -40,6 +45,14 @@ bash proofs/tla/run_tlc.sh all          # every family
 A run compares each configuration's result with the family's `EXPECTED.txt` and exits non-zero
 on any mismatch. CI runs `proofs/tla/run_tlc.sh all` (`.github/workflows/tla.yml`).
 `proofs/tla/README.md` explains the models, their configurations and their findings.
+
+Lean: install elan once (`proofs/lean/README.md` says how), then
+
+```sh
+bash proofs/lean/check.sh    # fails on a hole in a proof (sorry, admit), then builds every proof
+```
+
+CI runs the same (`.github/workflows/lean.yml`).
 
 ## Coverage
 
