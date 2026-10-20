@@ -8,13 +8,14 @@ counterexample for every one, and none for the code as built.
 
 | where | what | run |
 |-------|------|-----|
-| `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `bash tla/run_tlc.sh reclaim` (about 37 minutes) |
-| `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `bash tla/run_tlc.sh chained` (about 23 minutes) |
-| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap | `bash tla/run_tlc.sh hopscotch` (about 12 minutes) |
+| `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `bash proofs/tla/run_tlc.sh reclaim` (about 37 minutes) |
+| `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `bash proofs/tla/run_tlc.sh chained` (about 23 minutes) |
+| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap | `bash proofs/tla/run_tlc.sh hopscotch` (about 12 minutes) |
 
-`bash tla/run_tlc.sh all` runs every family (each directory of `tla/` with an `EXPECTED.txt`). The
-script takes the TLA+ tools from `$TLA2TOOLS` when set, otherwise from `tla/.tools/tla2tools.jar`,
-which it fetches on first use (release v1.7.4, TLC 2.19, the version of every recorded run).
+`bash proofs/tla/run_tlc.sh all` runs every family (each directory of `proofs/tla/` with an
+`EXPECTED.txt`). The script takes the TLA+ tools from `$TLA2TOOLS` when set, otherwise from
+`proofs/tla/.tools/tla2tools.jar`, which it fetches on first use (release v1.7.4, TLC 2.19, the
+version of every recorded run).
 `TLC_WORKERS` caps the workers of a passing configuration (default: TLC's `auto`), `TLC_LIMIT` the
 seconds each configuration may take (default 3600). A configuration expected to break a property
 runs one worker, so the breadth-first trace is the shortest, and the trace is kept in
@@ -22,7 +23,7 @@ runs one worker, so the breadth-first trace is the shortest, and the trace is ke
 configuration must report, and a full run of a family rewrites its `tlc-run.txt`. CI runs the
 same: `.github/workflows/tla.yml` runs `.github/workflows/tla.sh` on every push to and pull request
 against `master`, which fetches tla2tools.jar v1.7.4, checks its SHA-256 and hands it to
-`tla/run_tlc.sh all` through `TLA2TOOLS`.
+`proofs/tla/run_tlc.sh all` through `TLA2TOOLS`.
 
 ## The core reclamation (`reclaim/Reclaim.tla`)
 
@@ -38,10 +39,10 @@ counter, the free-list cache and its count, the cached, drained and birth epochs
 the tid); the word of released tids, each tid's orphan word and the count of tids holding orphans.
 
 The model is written in PlusCal: `pcal.trans` writes the TLA+ translation below the algorithm
-(edit the algorithm, run `java -cp tla/.tools/tla2tools.jar pcal.trans -nocfg
-tla/reclaim/Reclaim.tla`, and delete the `Reclaim.old` it leaves). Each label is one step: one
-atomic instruction of the code, with the thread-local work before or after it (handle cells, the
-nodes of the thread's own unsubmitted batch or of a chain it took, a batch whose count is zero,
+(edit the algorithm, run `java -cp proofs/tla/.tools/tla2tools.jar pcal.trans -nocfg
+proofs/tla/reclaim/Reclaim.tla`, and delete the `Reclaim.old` it leaves). Each label is one step:
+one atomic instruction of the code, with the thread-local work before or after it (handle cells,
+the nodes of the thread's own unsubmitted batch or of a chain it took, a batch whose count is zero,
 which no other thread reaches). Fences are not steps: the model is sequentially consistent, and
 the SeqCst fences that pair a slot's publication with a submission's scan are what make the
 hardware behave as that interleaving on these paths. A `WordPair::load` is two steps, the low word

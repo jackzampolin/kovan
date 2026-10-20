@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Model-check the configurations of one family (a directory of tla/ with an EXPECTED.txt) and
-# compare each result with what EXPECTED.txt says it must be.
-#   bash tla/run_tlc.sh chained                     every configuration, rewrites chained/tlc-run.txt
-#   bash tla/run_tlc.sh chained CM_iter CM_get      only those (tlc-run.txt untouched)
-#   bash tla/run_tlc.sh all                          every family
+# Model-check the configurations of one family (a directory of proofs/tla/ with an EXPECTED.txt)
+# and compare each result with what EXPECTED.txt says it must be.
+#   bash proofs/tla/run_tlc.sh chained                 every configuration, rewrites chained/tlc-run.txt
+#   bash proofs/tla/run_tlc.sh chained CM_iter CM_get  only those (tlc-run.txt untouched)
+#   bash proofs/tla/run_tlc.sh all                     every family
 # The TLA+ tools come from $TLA2TOOLS when it names a tla2tools.jar, otherwise from
-# tla/.tools/tla2tools.jar, fetched on first use (release v1.7.4, TLC 2.19, the version every
+# proofs/tla/.tools/tla2tools.jar, fetched on first use (release v1.7.4, TLC 2.19, the version every
 # recorded run used). TLC_WORKERS caps the workers of a passing configuration (default auto);
 # TLC_LIMIT the seconds each configuration may take (default 3600). A configuration expected to
 # break a property runs one worker, so breadth-first search keeps its trace the shortest, and the
@@ -66,8 +66,8 @@ for n in "${names[@]}"; do
   rm -rf "$meta"
 done
 if [ "$full" = 1 ]; then
-  { echo "TLC run of every configuration in tla/$family, $(date -u '+%Y-%m-%d %H:%M UTC')."
-    echo "Written by tla/run_tlc.sh, not by hand. $(java -cp "$jar" tlc2.TLC -h 2>&1 | grep -o 'Version [0-9.]* of [0-9A-Za-z ]*' | head -1)."
+  { echo "TLC run of every configuration in proofs/tla/$family, $(date -u '+%Y-%m-%d %H:%M UTC')."
+    echo "Written by proofs/tla/run_tlc.sh, not by hand. $(java -cp "$jar" tlc2.TLC -h 2>&1 | grep -o 'Version [0-9.]* of [0-9A-Za-z ]*' | head -1)."
     echo "Java -Xmx8g; -workers ${TLC_WORKERS:-auto}, or 1 worker where a violation is expected. Limit: ${TLC_LIMIT:-3600} s each."
     echo; echo "$hdr"; printf "%s" "$rows"; echo
     echo "results matching EXPECTED.txt: $(printf "%s" "$rows" | grep -c ' yes$') of ${#names[@]}"
