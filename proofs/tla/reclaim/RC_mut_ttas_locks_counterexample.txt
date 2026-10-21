@@ -327,7 +327,7 @@ State 3: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ hm = <<0, 0>>
 /\ hce = <<0, 0>>
 /\ hx = <<0, 0>>
-/\ pce = <<1, 0>>
+/\ pce = <<0, 0>>
 /\ ix = <<0, 0>>
 /\ bfst = <<0, 0>>
 /\ hep = <<0, 0>>
@@ -348,8 +348,8 @@ State 3: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ dwas = <<FALSE, FALSE>>
 /\ lcnt = <<0, 0>>
 /\ spe = <<0, 0>>
-/\ pa = <<2, 0>>
-/\ pc = <<"AT0", "TH2">>
+/\ pa = <<0, 0>>
+/\ pc = <<"PN1", "PN1">>
 /\ pe = <<0, 0>>
 /\ ph = <<0, 0>>
 /\ pk = <<0, 0>>
@@ -398,7 +398,7 @@ State 3: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ which = <<0, 0>>
 /\ ntid = 0
 /\ rok = <<TRUE, TRUE>>
-/\ pinc = <<1, 0>>
+/\ pinc = <<0, 0>>
 /\ orphaned = 0
 /\ tdo = <<FALSE, FALSE>>
 /\ dep = <<0, 0>>
@@ -409,7 +409,7 @@ State 3: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ rsk = <<0, 0>>
 /\ acl = <<0, 0>>
 /\ tid = <<-1, -1>>
-/\ opi = <<1, 0>>
+/\ opi = <<1, 1>>
 /\ adv = <<0, 0>>
 /\ lkO = FALSE
 /\ lkT = FALSE
@@ -429,9 +429,8 @@ State 3: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ rmin = <<0, 0>>
 /\ errs = {}
 /\ xcap = <<<<>>, <<>>>>
-/\ stack = << << [pc |-> "PNU", procedure |-> "AllocTid", ah |-> 0, aseen |-> {}],
-      [pc |-> "TH2", procedure |-> "Pin", pce |-> 0, pa |-> 0] >>,
-   <<>> >>
+/\ stack = << <<[pc |-> "TH2", procedure |-> "Pin", pce |-> 0, pa |-> 0]>>,
+   <<[pc |-> "TH2", procedure |-> "Pin", pce |-> 0, pa |-> 0]>> >>
 /\ blst = <<0, 0>>
 /\ rprv = <<0, 0>>
 /\ trf = <<0, 0>>
@@ -936,7 +935,7 @@ State 7: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ lcnt = <<0, 0>>
 /\ spe = <<0, 0>>
 /\ pa = <<2, 2>>
-/\ pc = <<"SK2", "AT0">>
+/\ pc = <<"SK1", "SK1">>
 /\ pe = <<0, 0>>
 /\ ph = <<0, 0>>
 /\ pk = <<0, 0>>
@@ -982,7 +981,7 @@ State 7: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ aseen = <<{}, {}>>
 /\ flst = <<0, 0>>
 /\ rmx = <<0, 0>>
-/\ which = <<1, 0>>
+/\ which = <<1, 1>>
 /\ ntid = 0
 /\ rok = <<TRUE, TRUE>>
 /\ pinc = <<1, 1>>
@@ -1019,7 +1018,8 @@ State 7: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ stack = << << [pc |-> "TidClaim", procedure |-> "SpinLock", which |-> 0],
       [pc |-> "PNU", procedure |-> "AllocTid", ah |-> 0, aseen |-> {}],
       [pc |-> "TH2", procedure |-> "Pin", pce |-> 0, pa |-> 0] >>,
-   << [pc |-> "PNU", procedure |-> "AllocTid", ah |-> 0, aseen |-> {}],
+   << [pc |-> "TidClaim", procedure |-> "SpinLock", which |-> 0],
+      [pc |-> "PNU", procedure |-> "AllocTid", ah |-> 0, aseen |-> {}],
       [pc |-> "TH2", procedure |-> "Pin", pce |-> 0, pa |-> 0] >> >>
 /\ blst = <<0, 0>>
 /\ rprv = <<0, 0>>
@@ -9532,5 +9532,5 @@ State 61: <StepW line 6706, col 13 to line 6706, col 56 of module Reclaim>
 /\ trf = <<0, 0>>
 
 State 62: Stuttering
-Finished checking temporal properties in 00s at 2026-10-21 04:32:12
-10613 states generated, 5571 distinct states found, 253 states left on queue.
+Finished checking temporal properties in 00s at 2026-10-21 06:41:20
+10623 states generated, 5576 distinct states found, 253 states left on queue.
