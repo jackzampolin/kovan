@@ -115,8 +115,8 @@ resize no remove asked for. The theorems are about any run between two erasures.
 | `one_thread_failed_copies_lt` | when one thread makes all the failed copies, they add up to less than twice the first one plus twice the inserts |
 
 Both files explain every definition and every proof step in plain words, with a small example
-for each statement. `#print axioms` on every theorem lists only Lean's standard axioms
-(`propext`, `Classical.choice`, `Quot.sound`), or none.
+for each statement. Every theorem rests only on Lean's own axioms (`propext`, `Quot.sound`,
+`Classical.choice`), or on none: `check.sh axioms` checks it for every theorem of the library.
 
 ## How to check it
 
@@ -134,10 +134,15 @@ repository root:
 ```sh
 just lean-check-sorry    # fails if `sorry` or `admit` (a hole in a proof) appears
 just lean                # `lake build --wfail`: every proof, failing on any warning
+just lean-check-axioms   # fails if a theorem rests on an axiom other than Lean's own three
 ```
 
-Both run `check.sh` in this directory (`bash proofs/lean/check.sh sorry` and `... build`;
-with no argument it runs both).
+All three run `check.sh` in this directory (`bash proofs/lean/check.sh sorry`, `... build` and
+`... axioms`; with no argument it runs all three). The axiom check compiles `Axioms.lean`, which
+walks every theorem whose name starts with `Kovan` and collects the axioms it rests on, through
+every lemma it uses: a proof with a hole rests on `sorryAx`, and one that ran compiled code on
+`Lean.ofReduceBool`, so either fails it. It finds the theorems itself, so a new one is checked
+without being listed anywhere.
 
-The first build downloads the pinned Lean release. CI runs the same two checks
+The first build downloads the pinned Lean release. CI runs the same three checks
 (`.github/workflows/lean.yml`), with an elan release pinned by its SHA-256.

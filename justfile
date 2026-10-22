@@ -197,11 +197,16 @@ lean:
 lean-check-sorry:
     bash proofs/lean/check.sh sorry
 
+# Fail if a Lean theorem rests on an axiom other than propext, Quot.sound and Classical.choice (CI: lean.yml)
+[group("proofs")]
+lean-check-axioms:
+    PATH="{{ elan_bin }}:$PATH" bash proofs/lean/check.sh axioms
+
 # Every proof: all the TLA+ models, then the Lean proofs
 [group("proofs")]
-proofs: tla-all lean-check-sorry lean
+proofs: tla-all lean-check-sorry lean lean-check-axioms
 
 # ---------------------------------------------------------------- all of CI
 
 # Run what CI runs, one job after another, on this machine; miri last, since it cleans the build directory (hours)
-ci: fmt-check clippy clippy-no-std build test-release bench-build test test-nightly shuttle semver wasm-build wasm-clippy wasm-test-all test-i686 width-check tla-all lean-check-sorry lean miri
+ci: fmt-check clippy clippy-no-std build test-release bench-build test test-nightly shuttle semver wasm-build wasm-clippy wasm-test-all test-i686 width-check tla-all lean-check-sorry lean lean-check-axioms miri
