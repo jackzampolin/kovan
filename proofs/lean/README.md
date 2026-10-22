@@ -77,11 +77,14 @@ thread rule, as `ShrinkWorkBound`, in its configurations with several threads.
 
 ## What is proved
 
-`Kovan/HopscotchShrink.lean`, a model of `kovan-map/src/hopscotch.rs` (`underfull`,
-`unlink_held`, `clear`) and `kovan-map/src/hopscotch/resize.rs` (`try_resize`): a map is its
-count, its capacity and its threshold (`shrink_below`, with a case of its own for `usize::MAX`,
-"no threshold"); the operations are an insert, a remove (given whether the shrink it may ask
-for fits), a grow and a clear.
+`Kovan/HopscotchShrink.lean`, a model of `kovan-map/src/hopscotch.rs` (`shrink_at`,
+`unlink_held`, `clear`), `kovan-map/src/hopscotch/table.rs` (`Table::shrink_at`) and
+`kovan-map/src/hopscotch/resize.rs` (`try_resize`): a map is its count, its capacity and its
+threshold (with a case of its own, `unset`, for "no threshold"); the operations are an insert, a
+remove (given whether the shrink it may ask for fits), a grow and a clear. The code folds the
+threshold and the quarter-full test into one word of the table; `word` computes it from the
+model, and `asks_iff_below_word` with `word_gaveUp`, `word_published` and `word_cleared` prove
+the fold exact, so the theorems hold of the code as written.
 
 | theorem | what it says |
 |---------|--------------|
@@ -97,6 +100,8 @@ for fits), a grow and a clear.
 | `unset_remove_asks_iff` | with no threshold (after a clear, say), a remove asks for a shrink exactly when it leaves the map underfull |
 | `failed_shrinks_halve` | between two erasures, each failed shrink happens at fewer than half the entries of the one before |
 | `failed_shrink_copies_below_twice_first` | between two erasures, the failed shrinks together happened at fewer than twice the entries of the first one, so they clone fewer than that many entries in total |
+| `asks_iff_below_word` | the code's one compare (`count < table.shrink_at`) asks for a shrink exactly when the two tests above do (underfull, and below the threshold if there is one) |
+| `word_gaveUp`, `word_published`, `word_cleared` | a failed shrink, a publication and a clear leave exactly the word the code writes (the quarter lowered to the threshold, the new table's quarter, the quarter) |
 
 `Kovan/HopscotchShrinkThreads.lean`, the same rule when threads interleave: a state is the
 count, the threshold and, for each thread, whether it asked for a shrink that has not run yet;

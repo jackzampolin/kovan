@@ -15,7 +15,6 @@ State 1: <Initial predicate>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -159,7 +158,8 @@ State 1: <Initial predicate>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -257,7 +257,7 @@ State 1: <Initial predicate>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
+State 2: <Dispatch line 207, col 5 to line 221, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -272,7 +272,6 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -416,7 +415,8 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RW",
@@ -514,7 +514,7 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
+State 3: <RW line 614, col 5 to line 617, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -529,7 +529,6 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -673,7 +672,8 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RC",
@@ -771,7 +771,7 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
+State 4: <RC line 623, col 5 to line 639, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -786,7 +786,6 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -930,7 +929,8 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RS",
@@ -1028,7 +1028,7 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 5: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
+State 5: <RS line 645, col 5 to line 660, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1043,7 +1043,6 @@ State 5: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -1187,7 +1186,8 @@ State 5: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RU",
@@ -1285,7 +1285,7 @@ State 5: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 6: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
+State 6: <RU line 665, col 5 to line 683, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1300,7 +1300,6 @@ State 6: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 4
 /\ recorded = 11
 /\ latch = FALSE
@@ -1444,7 +1443,8 @@ State 6: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RN",
@@ -1542,7 +1542,7 @@ State 6: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 7: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
+State 7: <RN line 709, col 5 to line 715, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1557,7 +1557,6 @@ State 7: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = FALSE
@@ -1701,7 +1700,8 @@ State 7: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RR",
@@ -1799,7 +1799,7 @@ State 7: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 8: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
+State 8: <RR line 718, col 5 to line 724, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1814,7 +1814,6 @@ State 8: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = FALSE
@@ -1958,7 +1957,8 @@ State 8: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RT",
@@ -2056,7 +2056,7 @@ State 8: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 9: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
+State 9: <RT line 728, col 5 to line 732, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2071,7 +2071,6 @@ State 9: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = FALSE
@@ -2215,7 +2214,8 @@ State 9: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "RQ",
@@ -2313,7 +2313,7 @@ State 9: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 10: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
+State 10: <RQ line 738, col 5 to line 746, col 68 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2328,7 +2328,6 @@ State 10: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -2472,7 +2471,8 @@ State 10: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -2570,7 +2570,7 @@ State 10: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 11: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 11: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2585,7 +2585,6 @@ State 11: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -2729,7 +2728,8 @@ State 11: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -2827,7 +2827,7 @@ State 11: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 12: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 12: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2842,7 +2842,6 @@ State 12: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -2986,7 +2985,8 @@ State 12: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -3084,7 +3084,7 @@ State 12: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 13: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 13: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3099,7 +3099,6 @@ State 13: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -3243,7 +3242,8 @@ State 13: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -3341,7 +3341,7 @@ State 13: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 14: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 14: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3356,7 +3356,6 @@ State 14: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -3500,7 +3499,8 @@ State 14: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -3598,7 +3598,7 @@ State 14: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 15: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 15: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3613,7 +3613,6 @@ State 15: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -3757,7 +3756,8 @@ State 15: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -3855,7 +3855,7 @@ State 15: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 16: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 16: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3870,7 +3870,6 @@ State 16: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -4014,7 +4013,8 @@ State 16: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -4112,7 +4112,7 @@ State 16: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 17: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 17: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4127,7 +4127,6 @@ State 17: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -4271,7 +4270,8 @@ State 17: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -4369,7 +4369,7 @@ State 17: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 18: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 18: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4384,7 +4384,6 @@ State 18: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -4528,7 +4527,8 @@ State 18: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -4626,7 +4626,7 @@ State 18: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 19: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 19: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4641,7 +4641,6 @@ State 19: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -4785,7 +4784,8 @@ State 19: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -4883,7 +4883,7 @@ State 19: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 20: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 20: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4898,7 +4898,6 @@ State 20: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -5042,7 +5041,8 @@ State 20: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -5140,7 +5140,7 @@ State 20: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 21: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 21: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5155,7 +5155,6 @@ State 21: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -5299,7 +5298,8 @@ State 21: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -5397,7 +5397,7 @@ State 21: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 22: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 22: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5412,7 +5412,6 @@ State 22: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -5556,7 +5555,8 @@ State 22: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -5654,7 +5654,7 @@ State 22: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 23: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 23: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5669,7 +5669,6 @@ State 23: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -5813,7 +5812,8 @@ State 23: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -5911,7 +5911,7 @@ State 23: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 24: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 24: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5926,7 +5926,6 @@ State 24: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -6070,7 +6069,8 @@ State 24: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -6168,7 +6168,7 @@ State 24: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 25: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 25: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6183,7 +6183,6 @@ State 25: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -6327,7 +6326,8 @@ State 25: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -6425,7 +6425,7 @@ State 25: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 26: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 26: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6440,7 +6440,6 @@ State 26: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -6584,7 +6583,8 @@ State 26: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z1",
@@ -6682,7 +6682,7 @@ State 26: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 27: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 27: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6697,7 +6697,6 @@ State 27: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -6841,7 +6840,8 @@ State 27: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZC",
@@ -6939,7 +6939,7 @@ State 27: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 28: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
+State 28: <ZC line 1051, col 5 to line 1059, col 72 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6954,7 +6954,6 @@ State 28: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 0, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -7098,7 +7097,8 @@ State 28: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -7196,7 +7196,7 @@ State 28: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 29: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 29: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7211,7 +7211,6 @@ State 29: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 0, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 0, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -7355,7 +7354,8 @@ State 29: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -7453,7 +7453,7 @@ State 29: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 30: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 30: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7468,7 +7468,6 @@ State 30: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -7612,7 +7611,8 @@ State 30: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -7710,7 +7710,7 @@ State 30: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 31: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 31: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7725,7 +7725,6 @@ State 31: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -7869,7 +7868,8 @@ State 31: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -7967,7 +7967,7 @@ State 31: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 32: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 32: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7982,7 +7982,6 @@ State 32: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -8126,7 +8125,8 @@ State 32: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -8224,7 +8224,7 @@ State 32: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 33: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 33: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8239,7 +8239,6 @@ State 33: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -8383,7 +8382,8 @@ State 33: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -8481,7 +8481,7 @@ State 33: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 34: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 34: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8496,7 +8496,6 @@ State 34: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -8640,7 +8639,8 @@ State 34: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -8738,7 +8738,7 @@ State 34: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 35: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 35: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8753,7 +8753,6 @@ State 35: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -8897,7 +8896,8 @@ State 35: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -8995,7 +8995,7 @@ State 35: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 36: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 36: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9010,7 +9010,6 @@ State 36: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 11
 /\ count = 3
 /\ recorded = 11
 /\ latch = TRUE
@@ -9154,7 +9153,8 @@ State 36: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<4, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "ZK",
@@ -9252,7 +9252,7 @@ State 36: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 37: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
+State 37: <ZK line 1064, col 5 to line 1118, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9267,7 +9267,6 @@ State 37: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -9411,7 +9410,8 @@ State 37: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "Z4",
@@ -9509,7 +9509,7 @@ State 37: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 38: <Z4 line 1154, col 5 to line 1158, col 68 of module HopscotchMap>
+State 38: <Z4 line 1166, col 5 to line 1170, col 68 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9524,7 +9524,6 @@ State 38: <Z4 line 1154, col 5 to line 1158, col 68 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = FALSE
@@ -9668,7 +9667,8 @@ State 38: <Z4 line 1154, col 5 to line 1158, col 68 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -9766,7 +9766,7 @@ State 38: <Z4 line 1154, col 5 to line 1158, col 68 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 39: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
+State 39: <Z0 line 1011, col 5 to line 1019, col 74 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9781,7 +9781,6 @@ State 39: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -9925,7 +9924,8 @@ State 39: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -10023,7 +10023,7 @@ State 39: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 40: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 40: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10038,7 +10038,6 @@ State 40: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -10182,7 +10181,8 @@ State 40: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -10280,7 +10280,7 @@ State 40: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 41: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 41: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10295,7 +10295,6 @@ State 41: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -10439,7 +10438,8 @@ State 41: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -10537,7 +10537,7 @@ State 41: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 42: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 42: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10552,7 +10552,6 @@ State 42: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -10696,7 +10695,8 @@ State 42: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -10794,7 +10794,7 @@ State 42: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 43: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 43: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10809,7 +10809,6 @@ State 43: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -10953,7 +10952,8 @@ State 43: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -11051,7 +11051,7 @@ State 43: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 44: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 44: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11066,7 +11066,6 @@ State 44: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -11210,7 +11209,8 @@ State 44: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -11308,7 +11308,7 @@ State 44: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 45: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 45: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11323,7 +11323,6 @@ State 45: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -11467,7 +11466,8 @@ State 45: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -11565,7 +11565,7 @@ State 45: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 46: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 46: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11580,7 +11580,6 @@ State 46: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -11724,7 +11723,8 @@ State 46: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -11822,7 +11822,7 @@ State 46: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 47: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 47: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11837,7 +11837,6 @@ State 47: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -11981,7 +11980,8 @@ State 47: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -12079,7 +12079,7 @@ State 47: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 48: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 48: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12094,7 +12094,6 @@ State 48: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -12238,7 +12237,8 @@ State 48: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -12336,7 +12336,7 @@ State 48: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 49: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 49: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12351,7 +12351,6 @@ State 49: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -12495,7 +12494,8 @@ State 49: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -12593,7 +12593,7 @@ State 49: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 50: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 50: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12608,7 +12608,6 @@ State 50: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -12752,7 +12751,8 @@ State 50: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -12850,7 +12850,7 @@ State 50: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 51: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 51: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12865,7 +12865,6 @@ State 51: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -13009,7 +13008,8 @@ State 51: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -13107,7 +13107,7 @@ State 51: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 52: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 52: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13122,7 +13122,6 @@ State 52: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -13266,7 +13265,8 @@ State 52: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -13364,7 +13364,7 @@ State 52: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 53: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 53: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13379,7 +13379,6 @@ State 53: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -13523,7 +13522,8 @@ State 53: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -13621,7 +13621,7 @@ State 53: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 54: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 54: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13636,7 +13636,6 @@ State 54: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -13780,7 +13779,8 @@ State 54: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -13878,7 +13878,7 @@ State 54: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 55: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 55: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13893,7 +13893,6 @@ State 55: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -14037,7 +14036,8 @@ State 55: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -14135,7 +14135,7 @@ State 55: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 56: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
+State 56: <Z1 line 1023, col 5 to line 1039, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -14150,7 +14150,6 @@ State 56: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -14294,7 +14293,8 @@ State 56: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -14392,7 +14392,7 @@ State 56: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 57: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 57: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "live",
@@ -14407,7 +14407,6 @@ State 57: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -14551,7 +14550,8 @@ State 57: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -14649,7 +14649,7 @@ State 57: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 58: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 58: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -14664,7 +14664,6 @@ State 58: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -14808,7 +14807,8 @@ State 58: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -14906,7 +14906,7 @@ State 58: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 59: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 59: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -14921,7 +14921,6 @@ State 59: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -15065,7 +15064,8 @@ State 59: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -15163,7 +15163,7 @@ State 59: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 60: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 60: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -15178,7 +15178,6 @@ State 60: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -15322,7 +15321,8 @@ State 60: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -15420,7 +15420,7 @@ State 60: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 61: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 61: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -15435,7 +15435,6 @@ State 61: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -15579,7 +15578,8 @@ State 61: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -15677,7 +15677,7 @@ State 61: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 62: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 62: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -15692,7 +15692,6 @@ State 62: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -15836,7 +15835,8 @@ State 62: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -15934,7 +15934,7 @@ State 62: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 63: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 63: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -15949,7 +15949,6 @@ State 63: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -16093,7 +16092,8 @@ State 63: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -16191,7 +16191,7 @@ State 63: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 64: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 64: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -16206,7 +16206,6 @@ State 64: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -16350,7 +16349,8 @@ State 64: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -16448,7 +16448,7 @@ State 64: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 65: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 65: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -16463,7 +16463,6 @@ State 65: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -16607,7 +16606,8 @@ State 65: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -16705,7 +16705,7 @@ State 65: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 66: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 66: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -16720,7 +16720,6 @@ State 66: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -16864,7 +16863,8 @@ State 66: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -16962,7 +16962,7 @@ State 66: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 67: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 67: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -16977,7 +16977,6 @@ State 67: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -17121,7 +17120,8 @@ State 67: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -17219,7 +17219,7 @@ State 67: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 68: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 68: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -17234,7 +17234,6 @@ State 68: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -17378,7 +17377,8 @@ State 68: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -17476,7 +17476,7 @@ State 68: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 69: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 69: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -17491,7 +17491,6 @@ State 69: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -17635,7 +17634,8 @@ State 69: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -17733,7 +17733,7 @@ State 69: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 70: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 70: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -17748,7 +17748,6 @@ State 70: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -17892,7 +17891,8 @@ State 70: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -17990,7 +17990,7 @@ State 70: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 71: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 71: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -18005,7 +18005,6 @@ State 71: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -18149,7 +18148,8 @@ State 71: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -18247,7 +18247,7 @@ State 71: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 72: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 72: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -18262,7 +18262,6 @@ State 72: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -18406,7 +18405,8 @@ State 72: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -18504,7 +18504,7 @@ State 72: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 73: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 73: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -18519,7 +18519,6 @@ State 73: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -18663,7 +18662,8 @@ State 73: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -18761,7 +18761,7 @@ State 73: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 74: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 74: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -18776,7 +18776,6 @@ State 74: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 3
 /\ recorded = 1
 /\ latch = TRUE
@@ -18920,7 +18919,8 @@ State 74: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",
@@ -19018,7 +19018,7 @@ State 74: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 75: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
+State 75: <ZX line 1135, col 5 to line 1163, col 42 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -19033,7 +19033,6 @@ State 75: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
   key |-> <<0, 16, 0, 16, 0, 5, 0, 0, 8, 0>>,
   val |-> <<1, 1, 1, 1, 0, 1, 0, 0, 1, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 1
 /\ count = 0
 /\ recorded = 11
 /\ latch = TRUE
@@ -19177,7 +19176,8 @@ State 75: <ZX line 1125, col 5 to line 1151, col 42 of module HopscotchMap>
            12 :> FALSE @@
            13 :> FALSE @@
            14 :> FALSE @@
-           15 :> FALSE ) >> ]
+           15 :> FALSE ) >>,
+  shk |-> <<1, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "R9",

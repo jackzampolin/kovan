@@ -14,7 +14,6 @@ State 1: <Initial predicate>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -34,7 +33,8 @@ State 1: <Initial predicate>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -179,7 +179,7 @@ State 1: <Initial predicate>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
+State 2: <Dispatch line 207, col 5 to line 221, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -193,7 +193,6 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -213,7 +212,8 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -358,7 +358,7 @@ State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
+State 3: <RW line 614, col 5 to line 617, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -372,7 +372,6 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -392,7 +391,8 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -537,7 +537,7 @@ State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
+State 4: <RC line 623, col 5 to line 639, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -551,7 +551,6 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -571,7 +570,8 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> TRUE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -716,7 +716,7 @@ State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 5: <CS line 823, col 5 to line 825, col 81 of module HopscotchMap>
+State 5: <CS line 830, col 5 to line 832, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -730,7 +730,6 @@ State 5: <CS line 823, col 5 to line 825, col 81 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -750,7 +749,8 @@ State 5: <CS line 823, col 5 to line 825, col 81 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> TRUE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -895,7 +895,7 @@ State 5: <CS line 823, col 5 to line 825, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 6: <CU line 830, col 5 to line 842, col 72 of module HopscotchMap>
+State 6: <CU line 837, col 5 to line 849, col 72 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -909,7 +909,6 @@ State 6: <CU line 830, col 5 to line 842, col 72 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -929,7 +928,8 @@ State 6: <CU line 830, col 5 to line 842, col 72 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> TRUE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -1074,7 +1074,7 @@ State 6: <CU line 830, col 5 to line 842, col 72 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 7: <CF line 852, col 5 to line 867, col 76 of module HopscotchMap>
+State 7: <CF line 859, col 5 to line 874, col 76 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1088,7 +1088,6 @@ State 7: <CF line 852, col 5 to line 867, col 76 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = FALSE
@@ -1108,7 +1107,8 @@ State 7: <CF line 852, col 5 to line 867, col 76 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> TRUE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",
@@ -1253,7 +1253,7 @@ State 7: <CF line 852, col 5 to line 867, col 76 of module HopscotchMap>
 /\ work = [first |-> <<0, 0>>, sum |-> <<0, 0>>, ins |-> <<0, 0>>]
 /\ cur = 1
 
-State 8: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
+State 8: <Z0 line 1011, col 5 to line 1019, col 74 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1267,7 +1267,6 @@ State 8: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
   key |-> <<0, 1, 0, 0, 0, 0, 0, 0, 0>>,
   val |-> <<1, 1, 0, 0, 0, 0, 0, 0, 0>> ]
 /\ err = "none"
-/\ shrinkBelow = 10
 /\ count = 2
 /\ recorded = 10
 /\ latch = TRUE
@@ -1287,7 +1286,8 @@ State 8: <Z0 line 1004, col 5 to line 1012, col 74 of module HopscotchMap>
          (0 :> 0 @@ 1 :> 0 @@ 2 :> 0 @@ 3 :> 0) >>,
   grd |->
       << (0 :> TRUE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE),
-         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >> ]
+         (0 :> FALSE @@ 1 :> FALSE @@ 2 :> FALSE @@ 3 :> FALSE) >>,
+  shk |-> <<0, 0>> ]
 /\ ts = ( 1 :>
       [ i |-> 1,
         pc |-> "next",

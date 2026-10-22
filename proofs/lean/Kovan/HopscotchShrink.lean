@@ -16,8 +16,9 @@ value for every entry it copied.
 Before the fix, the very next remove asked for the same shrink and failed the same way. A map
 holding 39 entries that saw one insert and one remove at a time paid for a useless copy of up
 to 39 entries on every remove. Now a failed shrink at 39 entries writes down 19 (half of 39,
-rounded down) in the field `shrink_below`, and no remove asks for a shrink again until fewer
-than 19 entries are left. A resize that succeeds, or a `clear`, erases what was written down.
+rounded down) as its threshold, and no remove asks for a shrink again until fewer than 19
+entries are left. A resize that succeeds, or a `clear`, erases what was written down. (The code
+keeps the threshold folded into one word of the table; the last section proves the fold exact.)
 
 This file proves, for every possible sequence of operations:
 
@@ -45,8 +46,8 @@ namespace Kovan.HopscotchShrink
 Example: a table of 64 buckets is never underfull, however empty it is. -/
 def minCapacity : Nat := 64
 
-/-- `underfull` in `kovan-map/src/hopscotch.rs`: fewer than a quarter of the buckets hold an
-entry, in a table bigger than the smallest one.
+/-- Underfull: fewer than a quarter of the buckets hold an entry, in a table bigger than the
+smallest one. The code tests it as `count < shrink_at(capacity)` (`lt_shrinkAt_iff` below).
 Example: 39 entries in 256 buckets are underfull (4 * 39 = 156 is less than 256); 64 entries
 are not (4 * 64 = 256 is not less than 256). -/
 def Underfull (count capacity : Nat) : Prop :=
@@ -57,11 +58,11 @@ instance (count capacity : Nat) : Decidable (Underfull count capacity) := by
   unfold Underfull
   infer_instance
 
-/-- The value of the field `shrink_below`. In the code it is a `usize`, and `usize::MAX` means
-"no threshold", since every count is below it. Here that value is a case of its own, `unset`,
-so no theorem needs counts to stay below `usize::MAX`. -/
+/-- The threshold a failed shrink wrote down, or none. The code folds it into the table's word
+`shrink_at` (`word` below); here "none" is a case of its own, `unset`, so no theorem needs a
+number standing for "no threshold". -/
 inductive ShrinkBelow where
-  /-- No failed shrink since the last erasure: `usize::MAX` in the code. -/
+  /-- No failed shrink since the last erasure: the table's word is its quarter. -/
   | unset
   /-- A failed shrink wrote down `n`: a remove asks for a shrink only when it leaves fewer than
   `n` entries. -/
@@ -69,7 +70,7 @@ inductive ShrinkBelow where
   deriving DecidableEq, Repr
 
 /-- Whether the threshold lets a remove that leaves `count` entries ask for a shrink: the
-`count < self.shrink_below.load(..)` half of the test at the end of `unlink_held`.
+threshold half of the test the code folds into one compare at the end of `unlink_held`.
 Examples: `unset` lets every count through; `below 19` lets 18 through but not 19. -/
 def ShrinkBelow.Allows : ShrinkBelow → Nat → Prop
   | .unset, _ => True
@@ -80,7 +81,8 @@ instance (t : ShrinkBelow) (count : Nat) : Decidable (t.Allows count) := by
   cases t <;> unfold ShrinkBelow.Allows <;> infer_instance
 
 /-- What the model keeps of a `HopscotchMap`: the number of entries (the field `count`), the
-number of buckets of the current table (`capacity`) and the field `shrink_below`.
+number of buckets of the current table (`capacity`) and the threshold (folded, in the code,
+into the current table's word `shrink_at`).
 Example: `⟨39, 256, .unset⟩` is a map of 39 entries in 256 buckets with no threshold. -/
 structure Map where
   count : Nat
@@ -94,8 +96,8 @@ Examples: 39 entries give 19; 3 entries give 1; 1 entry gives 1. -/
 def thresholdAfterFailure (count : Nat) : Nat := max (count / 2) 1
 
 /-- Whether a remove that left the map `m` (its count already lowered by one) asks for a
-shrink: the test at the end of `unlink_held`,
-`underfull(count, table.capacity) && count < self.shrink_below.load(..)`.
+shrink: the test at the end of `unlink_held`, `prev - 1 < table.shrink_at.load(..)`, which
+`asks_iff_below_word` proves is these two tests.
 Example: 18 entries in 256 buckets with threshold `below 19` ask; 19 entries do not. -/
 def AsksShrink (m : Map) : Prop :=
   Underfull m.count m.capacity ∧ m.shrinkBelow.Allows m.count
@@ -118,7 +120,8 @@ instance (m : Map) (fits : Bool) : Decidable (CopyFits m fits) := by
   infer_instance
 
 /-- A resize that published its new table: the `Some(new_table)` arm of `try_resize`. The
-table gets the new capacity and the threshold is erased (`shrink_below.store(usize::MAX)`).
+table gets the new capacity and the threshold is erased (the new table starts with its own word,
+`Table::new`).
 Example: `published ⟨18, 256, .below 19⟩ 128` is `⟨18, 128, .unset⟩`. -/
 def published (m : Map) (newCapacity : Nat) : Map :=
   { m with capacity := newCapacity, shrinkBelow := .unset }
@@ -694,5 +697,83 @@ theorem failed_shrink_copies_below_twice_first (m : Map) (ops : List Op) (h : No
   have hd := failures_descending m ops h
   rw [hfirst] at hd ⊢
   exact descending_total _ c rest hd
+
+/-! ## The one word the code keeps
+
+The code keeps no field of its own for the threshold. It folds the threshold and the
+quarter-full test into one word of the current table, `Table::shrink_at`
+(`kovan-map/src/hopscotch/table.rs`), so a remove makes one compare at the end of `unlink_held`:
+`prev - 1 < table.shrink_at.load(..)`. A new table's word starts at `shrink_at` of its capacity
+(`Table::new`), a failed shrink lowers it to the smaller of that and the threshold it writes
+(`try_resize`), and a clear sets it back (`clear`). Keeping it in the table is the same as keeping
+it in the map: only the current table is ever unlinked from (a replaced table keeps its writer
+guards held), and a new table starts with no failed shrink, just as a publication erases the
+threshold here.
+
+`word` computes that word from the model's map. The theorems prove that the one compare asks for
+a shrink exactly when the model's two tests do, and that each write leaves the word the model's
+state describes, so every theorem above holds of the code as it is written.
+-/
+
+/-- `shrink_at` in `kovan-map/src/hopscotch.rs`: where a new table's word starts. A quarter of
+the buckets, rounded up, so that a count below it is exactly a table less than a quarter full;
+zero for a table of at most 64 buckets, which never shrinks.
+Examples: `shrinkAt 256 = 64`, since `(256 + 3) / 4 = 64`; `shrinkAt 64 = 0`. -/
+def shrinkAt (capacity : Nat) : Nat :=
+  if minCapacity < capacity then (capacity + 3) / 4 else 0
+
+/-- The word `Table::shrink_at` holds for the map `m`: the table's quarter, lowered to the
+threshold when a failed shrink wrote one.
+Examples: `word ⟨39, 256, .unset⟩ = 64`; `word ⟨39, 256, .below 19⟩ = 19`. -/
+def word (m : Map) : Nat :=
+  match m.shrinkBelow with
+  | .unset => shrinkAt m.capacity
+  | .below n => min (shrinkAt m.capacity) n
+
+/-- A count below the quarter rounded up is exactly a table less than a quarter full: `count <
+(capacity + 3) / 4` and `4 * count < capacity` say the same thing about whole numbers.
+Example: in 256 buckets both hold for 63 entries and fail for 64. -/
+theorem lt_shrinkAt_iff (count capacity : Nat) :
+    count < shrinkAt capacity ↔ Underfull count capacity := by
+  -- Open both definitions; `split` takes the two cases of the table's size: above 64 buckets
+  -- both sides are about a quarter, at most 64 both are false; `omega` settles the arithmetic.
+  unfold shrinkAt Underfull
+  split <;> omega
+
+/-- The fold is exact: the code's one compare asks for a shrink exactly when the model's two
+tests (underfull, and below the threshold if there is one) do.
+Example: 18 entries in 256 buckets with threshold 19: the word is `min 64 19 = 19`, and
+`18 < 19`; the model asks too, since 18 underfills 256 and is below 19. -/
+theorem asks_iff_below_word (m : Map) : AsksShrink m ↔ m.count < word m := by
+  -- Open the two definitions and take the two cases of the threshold.
+  unfold AsksShrink word
+  cases m.shrinkBelow with
+  -- No threshold: the model's second test always passes, and the word is the quarter, so both
+  -- sides are "underfull" (`lt_shrinkAt_iff`).
+  | unset => simp [ShrinkBelow.Allows, lt_shrinkAt_iff]
+  -- A threshold `n`: being below the smaller of two numbers is being below both
+  -- (`Nat.lt_min`), and below the quarter is underfull (`lt_shrinkAt_iff`).
+  | below n => simp [ShrinkBelow.Allows, lt_shrinkAt_iff, Nat.lt_min]
+
+/-- A failed shrink leaves the word the code writes: the smaller of the table's quarter and the
+threshold, `shrink_at(capacity).min(failed_at)` in `try_resize`.
+Example: a failure at 39 entries in 256 buckets leaves `min 64 19 = 19`. -/
+theorem word_gaveUp (m : Map) :
+    word (gaveUp m) = min (shrinkAt m.capacity) (thresholdAfterFailure m.count) :=
+  -- `gaveUp` keeps the capacity and writes `below` the threshold: `word` computes it directly.
+  rfl
+
+/-- A published table's word is its quarter, as `Table::new` makes it.
+Example: a shrink to 128 buckets publishes a table whose word is 32. -/
+theorem word_published (m : Map) (capacity : Nat) :
+    word (published m capacity) = shrinkAt capacity :=
+  -- `published` erases the threshold, so the word is the new table's quarter.
+  rfl
+
+/-- A clear sets the word back to the table's quarter, as `clear` does.
+Example: a clear of a 256-bucket map whose word was 19 leaves 64. -/
+theorem word_cleared (m : Map) : word (step m .clear).map = shrinkAt m.capacity :=
+  -- A clear keeps the table and erases the threshold, so the word is that table's quarter.
+  rfl
 
 end Kovan.HopscotchShrink

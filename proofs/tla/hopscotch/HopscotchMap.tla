@@ -28,13 +28,14 @@
 (* writer), placing it as an insert places an entry, so the entry lands     *)
 (* without the guard ever being released after the closure ran.            *)
 (*                                                                          *)
-(* A remove that leaves the table less than a quarter full asks for a      *)
-(* shrink to half the size (`unlink_held`), unless a shrink failed since    *)
-(* the last published resize or clear and the count the remove left is not *)
-(* below what that failure wrote: a shrink whose copy does not fit is given *)
-(* up (`try_resize`) and writes half its count (at least 1) to             *)
-(* `shrinkBelow`, and a remove asks again only below that. A published      *)
-(* resize and a clear set `shrinkBelow` back to "no threshold".             *)
+(* A remove that leaves fewer entries than its table's shrink word asks for *)
+(* a shrink to half the size (`unlink_held`). A table's word (`shrink_at`,  *)
+(* `tb.shk` here) starts at a quarter of its capacity, so a remove asks     *)
+(* once the table is less than a quarter full; a shrink whose copy does not *)
+(* fit is given up (`try_resize`) and lowers the word to half its count (at *)
+(* least 1), so a remove asks again only below that; a clear sets the word  *)
+(* back. A published table starts with its own word, so a publication      *)
+(* forgets every failed shrink of the table it replaced.                    *)
 (*                                                                          *)
 (* The hash of key k is k (the tests' identity hasher); NH is the           *)
 (* neighborhood size (32 in the code). `Mutation` puts back one wrong rule *)
@@ -74,12 +75,17 @@ Home(k, c) == k % c
 Min(S) == CHOOSE x \in S : \A y \in S : x <= y
 Max2(a, b) == IF a > b THEN a ELSE b
 
-\* `usize::MAX` in `shrink_below`, "no threshold": above every count (a count never exceeds the
-\* entry pool), so it lets every remove ask for a shrink.
+\* "No threshold" in the history `recorded`: above every count (a count never exceeds the entry
+\* pool), so it holds back no remove.
 ShrinkAny == MaxEntries + 1
-\* `underfull` (hopscotch.rs): fewer than a quarter of the buckets hold an entry, in a table
-\* bigger than the smallest.
+\* The rule the code's shrink word folds in, as the history checks state it: fewer than a quarter
+\* of the buckets hold an entry, in a table bigger than the smallest.
 Underfull(n, c) == 4 * n < c /\ c > MinCap
+\* `shrink_at` (hopscotch.rs): where a new table's shrink word starts, the count below which a
+\* remove asks to halve a table of c buckets. A quarter rounded up, so `n < ShrinkAt(c)` is exactly
+\* `Underfull(n, c)`; zero for the smallest table, which never shrinks.
+ShrinkAt(c) == IF c > MinCap THEN (c + 3) \div 4 ELSE 0
+Min2(a, b) == IF a < b THEN a ELSE b
 \* No failed copy yet since the last publication or clear: every worker's history is empty.
 NoWork == [first |-> [q \in Workers |-> 0], sum |-> [q \in Workers |-> 0],
            ins |-> [q \in Workers |-> 0]]
@@ -91,7 +97,7 @@ CountedIn(w) == [w EXCEPT !.ins = [q \in Workers |-> IF w.first[q] > 0 THEN w.in
 
 VARIABLES
     ent,    \* entries: [st, key, val]
-    tb,     \* tables: [slot, hops, grd, stamp, cap, st]
+    tb,     \* tables: [slot, hops, grd, stamp, cap, st, shk (the shrink word, `shrink_at`)]
     cur,    \* the current table
     latch,  \* `resizing`
     count,  \* the map's count
@@ -100,17 +106,17 @@ VARIABLES
     err,    \* the first broken check
     prot,   \* entries each thread's guard protects
     ts,     \* threads
-    shrinkBelow, \* `shrink_below`: a remove asks for a shrink only below it (ShrinkAny: always)
     recorded,    \* history: what the last failed shrink since the last published resize or
                  \* clear wrote (ShrinkAny when none did), whatever the code does with it
     work         \* history of the failed copies since the last publication or clear, per
                  \* worker: `first` its first failed copy's count (0: none yet), `sum` the
                  \* counts of all its failed copies, `ins` the entries counted in since `first`
 
-vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts, shrinkBelow, recorded, work>>
-\* The threshold and its histories. Only a failed shrink, a publication and a clear write them,
-\* except `work.ins`, which an entry counted in (ICnt, CX) also moves.
-Thresholds == <<shrinkBelow, recorded, work>>
+vars == <<ent, tb, cur, latch, count, abs, hist, err, prot, ts, recorded, work>>
+\* The threshold's histories. Only a failed shrink, a publication and a clear write them, except
+\* `work.ins`, which an entry counted in (ICnt, CX) also moves. (The shrink word itself is a field
+\* of `tb`, written by the same three steps.)
+Thresholds == <<recorded, work>>
 
 InitEntry(i) == Len(InitSlots[i + 1]) = 2
 InitIds == {i \in 0..(Len(InitSlots) - 1) : InitEntry(i)}
@@ -172,7 +178,9 @@ Init ==
              grd |-> [t \in TIds |-> [h \in Homes |-> FALSE]],
              stamp |-> [t \in TIds |-> [h \in Homes |-> 0]],
              cap |-> [t \in TIds |-> IF t = 1 THEN InitCap ELSE 0],
-             st |-> [t \in TIds |-> IF t = 1 THEN "current" ELSE "unused"]]
+             st |-> [t \in TIds |-> IF t = 1 THEN "current" ELSE "unused"],
+             \* `Table::new` starts the word at `shrink_at(capacity)`.
+             shk |-> [t \in TIds |-> IF t = 1 THEN ShrinkAt(InitCap) ELSE 0]]
     /\ cur = 1
     /\ latch = FALSE
     /\ count = Cardinality(InitIds)
@@ -181,7 +189,6 @@ Init ==
     /\ err = "none"
     /\ prot = [p \in Procs |-> {}]
     /\ ts = [p \in Procs |-> Idle]
-    /\ shrinkBelow = ShrinkAny   \* `with_capacity_and_hasher` starts with `usize::MAX`
     /\ recorded = ShrinkAny
     /\ work = NoWork
 
@@ -518,7 +525,7 @@ ICnt(p) ==
     \* The insert's entry counted in: one more insert for the work history.
     /\ work' = IF ts[p].cnt THEN work ELSE CountedIn(work)
     /\ ts' = [ts EXCEPT ![p].cnt = TRUE, ![p].pc = "IR"]
-    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, shrinkBelow, recorded>>
+    /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, recorded>>
 
 \* Mutation "insert_keeps_guard": an insert publishes its bits but never lets go of the home
 \* guard, so the next writer of that home waits for it forever (Termination catches it).
@@ -572,11 +579,11 @@ NR(p) ==
 
 \* ---------------------------------------------------------------- the shrink a remove asks for
 
-\* `unlink_held` asks for a shrink when the count n it left underfills the table t and is below
-\* `shrink_below`. "no_shrink_bound" (the code before the threshold): underfull alone.
+\* `unlink_held` asks for a shrink when the count n it left is below the shrink word of its table
+\* t, one compare. "no_shrink_bound" (the code before the threshold): below a quarter alone, as
+\* if no failed shrink ever lowered the word.
 AsksShrink(n, t) ==
-    /\ Underfull(n, tb.cap[t])
-    /\ Mutation = "no_shrink_bound" \/ n < shrinkBelow
+    IF Mutation = "no_shrink_bound" THEN n < ShrinkAt(tb.cap[t]) ELSE n < tb.shk[t]
 
 \* The thread state once the remove decided: `shr` whether it asked, `rc` the capacity it asks
 \* for (half its table's), `left` the count it left (rc and left only change when it asks).
@@ -921,7 +928,7 @@ CX(p) ==
     \* A compute that fills its reservation counts an entry in: one more insert for the work
     \* history (a replace or a removal counts none in).
     /\ work' = IF count' = count + 1 THEN CountedIn(work) ELSE work
-    /\ UNCHANGED <<cur, latch, prot, shrinkBelow, recorded>>
+    /\ UNCHANGED <<cur, latch, prot, recorded>>
 
 \* Release the home guard, publishing the word as the writer staged it.
 CR(p) ==
@@ -1034,9 +1041,11 @@ Z1(p) ==
 Unused == {t \in TIds : tb.st[t] = "unused"}
 
 \* A new, empty table of `cap` buckets.
+\* Its shrink word starts at `shrink_at(cap)` (`Table::new`): no failed shrink yet.
 Fresh(t, cap) == [tb EXCEPT !.st[t] = "building", !.cap[t] = cap,
                             !.slot[t] = [i \in Idx |-> 0], !.hops[t] = [h \in Homes |-> {}],
-                            !.grd[t] = [h \in Homes |-> FALSE], !.stamp[t] = [h \in Homes |-> 0]]
+                            !.grd[t] = [h \in Homes |-> FALSE], !.stamp[t] = [h \in Homes |-> 0],
+                            !.shk[t] = ShrinkAt(cap)]
 
 ZC(p) ==
     /\ ts[p].pc = "ZC"
@@ -1078,11 +1087,12 @@ ZK(p) ==
                      ELSE IF ~fits /\ tb.cap[nt] < tb.cap[old]
                      \* A shrink whose copy does not fit is given up (`try_resize`, the `None`
                      \* arm): the copies are freed with the unpublished table, the old table's
-                     \* guards are given back (`release_writers`), and half the count, at least
-                     \* 1, is written to `shrink_below` (and to the history).
+                     \* guards are given back (`release_writers`), and its shrink word is lowered
+                     \* to half the count, at least 1, and at most its quarter (written while the
+                     \* guards are still held, as in the code), the history to half the count.
                      THEN /\ ent' = [ent EXCEPT !.st = [c \in Ents |-> IF c \in copies THEN "free" ELSE @[c]]]
-                          /\ tb' = [tb EXCEPT !.st[nt] = "unused", !.grd[old] = [h \in Homes |-> FALSE]]
-                          /\ shrinkBelow' = Max2(count \div 2, 1)
+                          /\ tb' = [tb EXCEPT !.st[nt] = "unused", !.grd[old] = [h \in Homes |-> FALSE],
+                                              !.shk[old] = Min2(ShrinkAt(tb.cap[old]), Max2(count \div 2, 1))]
                           /\ recorded' = Max2(count \div 2, 1)
                           \* A shrink a worker's remove asked for (ret is its answer, not "IW"):
                           \* its failed copy of `count` entries goes into that worker's work
@@ -1107,13 +1117,13 @@ ZK(p) ==
                           /\ UNCHANGED <<err, Thresholds>>
     /\ UNCHANGED <<cur, latch, count, abs, hist>>
 
-\* Publish; the replaced table keeps its guards held. The threshold is erased first
-\* (`shrink_below.store(usize::MAX)` before the table store), and so is the history.
+\* Publish; the replaced table keeps its guards held. The new table's shrink word is the one it
+\* was made with (Fresh): the failed shrinks of the table it replaces are forgotten with it, and so
+\* is the history.
 ZP(p) ==
     /\ ts[p].pc = "ZP"
     /\ tb' = [tb EXCEPT !.st[ts[p].old] = "old", !.st[ts[p].nt] = "current"]
     /\ cur' = ts[p].nt
-    /\ shrinkBelow' = ShrinkAny
     /\ recorded' = ShrinkAny
     /\ work' = NoWork      \* the histories start again after a publication
     /\ ts' = Go(p, "Z4")
@@ -1126,13 +1136,15 @@ ZX(p) ==
     /\ LET old == ts[p].old
            i == ts[p].idx
        IN IF i >= Span(old, tb)
+          \* The entries a failed shrink lowered the word for are gone: the word is set back to
+          \* the table's quarter (before the guards are given back, as in the code), and the
+          \* history is erased. "clear_keeps_bound" (the threshold without this reset): the
+          \* clear leaves the word as it was.
           THEN /\ tb' = [tb EXCEPT !.hops[old] = [h \in Homes |-> {}],
-                                   !.grd[old] = [h \in Homes |-> FALSE]]
+                                   !.grd[old] = [h \in Homes |-> FALSE],
+                                   !.shk[old] = IF Mutation = "clear_keeps_bound" THEN tb.shk[old]
+                                                ELSE ShrinkAt(tb.cap[old])]
                /\ count' = 0
-               \* The entries a failed shrink recorded its threshold for are gone: the
-               \* threshold is erased with them, and so is the history.
-               \* "clear_keeps_bound" (the threshold without this reset): the clear leaves it.
-               /\ shrinkBelow' = IF Mutation = "clear_keeps_bound" THEN shrinkBelow ELSE ShrinkAny
                /\ recorded' = ShrinkAny
                /\ work' = NoWork      \* and after a clear
                /\ ts' = Go(p, "Z4")
@@ -1227,14 +1239,17 @@ NoLeak ==
 
 Termination == <>AllDone
 
-\* The shrink threshold (`shrink_below`).
+\* The shrink threshold (the tables' shrink words, `shrink_at`).
 \* NoShrinkRetry: no remove asks for a shrink while the count it leaves is at or above what the
 \* last failed shrink since the last publication or clear recorded, so a failed shrink is not
 \* asked for again at the population it failed at.
 NoShrinkRetry == err # "shrink_retry"
-\* ShrinkReset: the map's threshold is exactly what the history says, so a publication and a
-\* clear erase it, and nothing but a failed shrink sets it.
-ShrinkReset == shrinkBelow = recorded
+\* ShrinkReset: the current table's shrink word is exactly what the history says, its quarter
+\* lowered by the last failed shrink since the last publication or clear, if any: so a
+\* publication and a clear erase what a failed shrink wrote, and nothing else lowers it.
+ShrinkReset ==
+    tb.shk[cur] = IF recorded = ShrinkAny THEN ShrinkAt(tb.cap[cur])
+                  ELSE Min2(ShrinkAt(tb.cap[cur]), recorded)
 \* ShrinkUnblocked: with no failed shrink since the last publication or clear (after a clear,
 \* say), a remove that leaves the map underfull asks for a shrink.
 ShrinkUnblocked == err # "shrink_blocked"

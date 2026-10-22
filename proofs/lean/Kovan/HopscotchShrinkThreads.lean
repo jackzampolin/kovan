@@ -43,7 +43,8 @@ with the inserts or the threads.
 
 ## The model
 
-A state is the count, the threshold (`shrink_below`) and, for each thread, whether it has
+A state is the count, the threshold (folded, in the code, into the table's word `shrink_at`)
+and, for each thread, whether it has
 asked for a shrink that has not run yet. The events are the steps other threads can put in
 between: an insert, a remove by a thread (which may ask), a shrink's copy that fails, a shrink
 that does nothing because another resize holds the `resizing` flag, and a failed copy of a
@@ -65,8 +66,8 @@ open Kovan.HopscotchShrink (ShrinkBelow thresholdAfterFailure)
 
 /-! ## The shared map and its events -/
 
-/-- What the threads share: the number of entries (`count`), the threshold (`shrink_below`)
-and, for each thread (numbered `0, 1, 2, ...`), whether it asked for a shrink that has not run
+/-- What the threads share: the number of entries (`count`), the threshold (folded, in the
+code, into the table's word `shrink_at`) and, for each thread (numbered `0, 1, 2, ...`), whether it asked for a shrink that has not run
 yet: a thread between the end of its `unlink_held` and its `try_resize`.
 Example: `⟨3, .unset, fun t => t == 1⟩` is a map of 3 entries with no threshold, where thread 1
 has asked for a shrink. -/

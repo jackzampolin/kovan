@@ -10,7 +10,7 @@ counterexample for every one, and none for the code as built.
 |-------|------|-----|
 | `reclaim/` | `kovan`'s memory reclamation: the global epoch, each thread's reservation and helper slots, pin (the drained-epoch skip, the transition attempts, the helped slow path and the detach of its slot list), the protected load (the raise, the escalation to the unconditional reservation), the guard's drop, retire (batches, their placement in the eligible slots, the count, the merge of a batch that cannot be placed), the traversal and the free-list cache, destructors that pin, load and retire from inside a free, flush, a thread's exit (two rounds, the deactivation, the batches parked on its tid) and the tid's hand-over | `just tla reclaim` (about 37 minutes) |
 | `chained/` | `kovan_map::HashMap`, the chained map: link words with a deleted mark, a frozen flag and a held flag, one CAS per write, the unlink-then-retire rule, the walk that steps past a deleted node only through a live link, the conditional writes that hold the key's link while their closure runs, the freezing migration (which waits for a hold) and clear, the bucket-snapshot walk | `just tla chained` (about 23 minutes) |
-| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap, the shrink a remove asks for and its threshold (`shrink_below`) | `just tla hopscotch` (about 3 minutes in the recorded run) |
+| `hopscotch/` | `kovan_map::HopscotchMap`: home buckets with hop bits, writer guard and move stamp, the guarded insert (existence scan, the bit published before the link, displacement toward the home), the guarded remove, the conditional writes (closure under the home guard, a compute of an absent key reserving its slot first), the lookup that rescans on a moved stamp, the resize that holds every writer guard, the clear, the walk across a table swap, the shrink a remove asks for and its threshold (the table's shrink word) | `just tla hopscotch` (about 3 minutes in the recorded run) |
 
 `just tla-all` runs every family (each directory of `proofs/tla/` with an `EXPECTED.txt`), and
 `just tla <family> [configuration...]` one family, or only the configurations named; both run
@@ -762,17 +762,22 @@ states in 585 s; it is left out of `EXPECTED.txt` for the time it would add to e
   home guard taken, the copy into the first free slot of each entry's neighborhood, a neighborhood
   found full doubling the new table of a grow and giving up a shrink, the replaced table's guards
   kept held);
-  `hopscotch.rs:451` `clear`: ZX.
-- The shrink a remove asks for and its threshold: `hopscotch.rs:267` `unlink_held` (`:289`, the
-  test `underfull(count, capacity) && count < shrink_below`, with `underfull` at `:61`): RN, and
-  the remove branch of CX for `remove_if` and compute, take the count down and decide whether to
-  ask (`AsksShrink`). RQ is the remove's `try_resize(capacity / 2)` once its guard is released
-  and its entry retired (`hopscotch/conditional.rs:345`, `:252`): it takes the latch, or returns
-  when a resize or a clear holds it, then runs Z1 to Z4 as any resize does and comes back to its
-  answer. `resize.rs:141` and `:158`: ZK gives up a shrink whose copy finds a neighborhood full,
-  frees the copies with the unpublished table, gives the old table's guards back and writes
-  `max(count / 2, 1)` to `shrinkBelow`; `resize.rs:148`: ZP writes "no threshold" when it
-  publishes; `hopscotch.rs:501`: ZX writes it at the end of a clear.
+  `hopscotch.rs:461` `clear`: ZX.
+- The shrink a remove asks for and its threshold: the table's shrink word
+  (`hopscotch/table.rs:432` `Table::shrink_at`, `tb.shk` here), which starts at
+  `hopscotch.rs:63` `shrink_at` of the capacity (`table.rs:461`, Fresh). `hopscotch.rs:270`
+  `unlink_held` (`:294`, the one compare `prev - 1 < table.shrink_at`): RN, and the remove branch
+  of CX for `remove_if` and compute, take the count down and decide whether to ask
+  (`AsksShrink`). RQ is the remove's `try_resize(capacity / 2)` once its guard is released and
+  its entry retired (`hopscotch/conditional.rs:338`, `:244`): it takes the latch, or returns when
+  a resize or a clear holds it, then runs Z1 to Z4 as any resize does and comes back to its
+  answer. `resize.rs:141` and `:160`: ZK gives up a shrink whose copy finds a neighborhood full,
+  frees the copies with the unpublished table, lowers the old table's word to
+  `min(shrink_at(capacity), max(count / 2, 1))` (`:162`) and gives its guards back;
+  `resize.rs:148`: ZP publishes a table whose word is its own; `hopscotch.rs:507`: ZX sets the
+  word back at the end of a clear. The model keeps the history `recorded` (the threshold the
+  last failed shrink wrote since the last publication or clear) beside the word, and
+  `ShrinkReset` checks the word is that history folded with the quarter.
 
 Abstractions: a neighborhood of two slots (32 in the code) and move stamps modulo four; a
 displacement probes to the end of the padded bucket array (the code stops at 512 slots); an entry
@@ -780,7 +785,7 @@ is freed only with its table; the latch is one boolean. `insert_if_absent` and `
 first look the key up (`hopscotch.rs:398`, `:379`) and answer a key found there as a lookup does,
 before any guard is taken; the model's claims start at `insert_impl`, so that first lookup is not
 modelled. `MinCap` stands for `MIN_CAPACITY` (64 in the code), scaled down as the neighborhood
-is; "no threshold" (`usize::MAX`) is `ShrinkAny`, one more than the entry pool, so above every
+is; "no threshold" in the history is `ShrinkAny`, one more than the entry pool, so above every
 count. Whether a shrink fits is not chosen: the copy computes it (ZK). Every configuration that
 predates the threshold sets `MinCap` to its `MaxCap`, so no remove of its programs asks for a
 shrink, and each reaches exactly the states it reached before the threshold was modelled.
@@ -792,9 +797,11 @@ copies every entry into a new table of half the size. If an entry finds no free 
 bucket there, the copy is thrown away and the table stays as it was. Without a threshold, the
 next remove asked for the same shrink again, and a map that stayed at the same size paid for
 the same useless copy on every remove. With it, the failed shrink writes half of its entry count
-(at least 1) to `shrink_below`, and a remove asks for a shrink again only when the count it
-leaves is below that. A resize that publishes its new table, and a clear, write "no threshold"
-back.
+(at least 1) into the table's shrink word, and a remove asks for a shrink again only when the
+count it leaves is below that. A resize that publishes its new table starts that table with no
+threshold, and a clear writes "no threshold" back. The code keeps one word per table for both
+rules (less than a quarter full, and below the threshold), so a remove makes one compare: the
+word is the table's quarter, lowered by a failed shrink.
 
 The shrink configurations use a table of sixteen buckets with neighborhoods of two slots,
 holding keys 0 and 16 (both of bucket 0, in slots 0 and 1), 5 and 8 (`S_sparse`). Removing key
@@ -994,7 +1001,7 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
 
 - **A failed shrink repeated on every remove** (`HS_mut_no_shrink_bound`, 55 states). With no
   threshold, a remove at the count a shrink failed at asks for it again. Fix: a failed shrink
-  writes half its count to `shrink_below`, and a remove asks only below it. A clear that kept
+  lowers the table's shrink word to half its count, and a remove asks only below it. A clear that kept
   that threshold blocked the shrink of a map refilled after the clear
   (`HS_mut_clear_keeps_bound`, 103 states); the clear writes "no threshold" back.
 - **What the threshold bounds, and what it does not** (`HS_wit_shrink_after_insert`, 37
