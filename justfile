@@ -175,6 +175,11 @@ bench crate target *args:
 bench-all *args:
     RUSTFLAGS="{{ cmpxchg }}" cargo bench --workspace --benches {{ args }}
 
+# Compare one crate's benchmarks between two revisions, in interleaved rounds, with the spread between rounds (tools/bench-ab.py), e.g. --base master --head HEAD -p kovan-map --bench hopscotch
+[group("bench")]
+bench-ab *args:
+    RUSTFLAGS="{{ cmpxchg }}" python3 tools/bench-ab.py {{ args }}
+
 # ---------------------------------------------------------------- proofs
 
 # Model-check one TLA+ family (reclaim, chained, hopscotch), all its configurations or the ones named
