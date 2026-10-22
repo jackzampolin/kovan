@@ -60,3 +60,11 @@ HS_shrink_churn                    MC_HopscotchMap    pass
 HS_shrink_two                      MC_HopscotchMap    pass
 HS_mut_no_shrink_bound_work        MC_HopscotchMap    violated:ShrinkWorkBound
 HS_wit_shrink_stale_ask            MC_HopscotchMap    violated:NoStaleShrink
+HS_mut_unguarded_remove_count      MC_HopscotchMap    violated:CountExact
+HS_mut_held_scan_leak              MC_HopscotchMap    violated:NoLeak
+HS_mut_resize_retry_held           MC_HopscotchMap    violated:OldHeld
+HS_mut_unguarded_remove_moved_retired  MC_HopscotchMap  violated:RetiredUnreachable
+HS_mut_clear_keeps_bound_reset     MC_HopscotchMap    violated:ShrinkReset
+HS_mut_insert_skips_lookup         MC_HopscotchMap    violated:NoDuplicate
+HS_mut_get_waits_for_guard         MC_HopscotchMap    violated:ReaderEnds
+HS_mut_insert_keeps_guard          MC_HopscotchMap    violated:Termination

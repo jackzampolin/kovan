@@ -510,11 +510,11 @@ configuration did not finish.
 
 The run recorded in `reclaim/tlc-run.txt` (8 workers for a passing configuration, one for a
 violation, beside other work on a 36-core machine): 69 of 69 configurations match `EXPECTED.txt`, in
-2247 s. The largest passing ones are `RC_wf_mix` (8,363,530 distinct states, 218 s), `RC_hand_over`
-(5,601,019 distinct states, 200 s), `RC_find_help_torn_request` (3,371,877 distinct states, 89 s),
-`RC_two_loads` (2,790,043 distinct states, 84 s); the longest runs that break a property, on one
-worker, are `RC_mut_help_no_seqno_check` (2,351,551 distinct states, 412 s) and
-`RC_mut_tid_released_early` (1,544,254 distinct states, 337 s).
+1384 s of TLC time. The largest passing ones are `RC_wf_mix` (8,363,530 distinct states, 135 s),
+`RC_hand_over` (5,601,019, 121 s), `RC_find_help_torn_request` (3,371,877, 58 s) and `RC_two_loads`
+(2,790,043, 51 s); the longest runs that break a property, on one worker, are
+`RC_mut_tid_released_early` (1,544,254 distinct states, 238 s) and `RC_mut_help_no_seqno_check`
+(2,351,551, 218 s).
 
 ## What the map models check
 
@@ -547,6 +547,16 @@ worker, are `RC_mut_help_no_seqno_check` (2,351,551 distinct states, 412 s) and
   ends without waiting for any writer.
 - Witnesses (`*_wit_*`): each asserts a case never happens, so TLC's counterexample proves the
   passing configurations reach it and are not vacuous.
+- Every property above has at least one mutation (`*_mut_*`) that breaks it, so none of them is a
+  check that could never fail. Where TLC stops at another property first, a configuration runs the
+  mutation against that property alone (named after the mutation and the property, such as
+  `HS_mut_unguarded_remove_count`) and expects that property to break. The properties no 0.1.20
+  rule breaks get a mutation of their own: an insert that does not look for its key's entry first
+  (`insert_skips_lookup`, `NoDuplicate`), a remove that unlinks a node and never retires it
+  (`unlink_no_retire`, chained `NoLeak`), a lookup that waits for a writer guard
+  (`get_waits_for_guard`, hopscotch `ReaderEnds`) and an insert that never releases its guard
+  (`insert_keeps_guard`, hopscotch `Termination`). `NoError` is the conjunction of the named
+  checks above, each of which a mutation breaks.
 
 The hash of a key is the key itself (the identity hasher of the tests), so a configuration places
 every key where the case needs it. The worker threads run fixed programs (`MC_*.tla`), a resizer
@@ -642,6 +652,9 @@ One bucket (every key in one chain) grown to two, or two shrunk to one; keys 1 t
 | `CM_mut_unheld_check` | a conditional write decides on the node it found without holding it, writes by a CAS, and after a lost CAS writes its decision to the node it finds next | none | 6, 1 | `CondExact` broken |
 | `CM_wit_held_meet` | witness: a plain write is about to CAS a link a conditional write holds | none | 5, 1 | `NoHeldMeet` broken |
 | `CM_wit_freeze_wait` | witness: a migration is about to freeze a held link | grow | 7, 2 | `NoFreezeWait` broken |
+| `CM_mut_insert_skips_lookup` | an insert's walk passes over the node of its own key and appends a second one (both workers insert key 1) | grow | 6, 2 | `NoDuplicate` broken |
+| `CM_mut_unlink_no_retire` | the remove whose CAS unlinks the node never retires it (a replace and a remove of key 1) | grow | 7, 2 | `NoLeak` broken |
+| `CM_mut_revalidate_claim_frozen` | 0.1.20's resize, which does not freeze the links it copies, checked against `OldFrozen` alone | grow | 5, 2 | `OldFrozen` broken |
 
 ### Findings: the kovan-map 0.1.20 defects each mutation puts back
 
@@ -694,13 +707,19 @@ One bucket (every key in one chain) grown to two, or two shrunk to one; keys 1 t
 
 ### TLC results
 
-The run recorded in `chained/tlc-run.txt` (8 workers, beside other work on a 36-core machine): 44 of
-44 configurations match `EXPECTED.txt`; the largest passing ones are `CM_rem_rem` (10,004,502
-distinct states, 317 s), `CM_big_iter` (7,974,721, 220 s), `CM_big_claims` (3,260,753, 50 s) and
-`CM_big_cond` (854,360, 16 s). Every configuration that passed before the held flag reaches exactly
-the states it reached before (the flag is never set without a conditional write). A variant of
-`CM_big_cond` racing a grow (7 nodes, 2 tables) passed too, with 51,695,290 distinct states in 585
-s; it is left out of `EXPECTED.txt` for the time it would add to every run.
+The run recorded in `chained/tlc-run.txt` (8 workers for a passing configuration, one for a
+violation, beside other work on a 36-core machine): 47 of 47 configurations match `EXPECTED.txt`,
+in 1207 s of TLC time; the largest passing ones are `CM_rem_rem` (10,004,502 distinct states,
+272 s), `CM_big_iter` (7,974,721, 226 s), `CM_big_claims` (3,260,753, 90 s) and `CM_big_cond`
+(854,360, 22 s). The 44 configurations recorded before the mutations for `NoDuplicate` and
+`NoLeak` and the `OldFrozen` run were added reach exactly the states and give exactly the results
+they gave before, except the two liveness mutations `CM_mut_validate_current` and
+`CM_mut_validate_current_iter`: they break `ReaderEnds` as before, but TLC checks liveness on
+the part of the state space explored so far at intervals, so where it stops, and the count it
+stops at, varies from run to run. Every configuration that passed before the held flag reaches
+exactly the states it reached before (the flag is never set without a conditional write). A
+variant of `CM_big_cond` racing a grow (7 nodes, 2 tables) passed too, with 51,695,290 distinct
+states in 585 s; it is left out of `EXPECTED.txt` for the time it would add to every run.
 
 ## The hopscotch map (`hopscotch/HopscotchMap.tla`)
 
@@ -920,6 +939,14 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
 | `HS_shrink_two` | two removers that can both ask for a shrink before either fails | none | pass |
 | `HS_mut_no_shrink_bound_work` | no threshold, the program of `HS_shrink_churn` | none | `ShrinkWorkBound` broken |
 | `HS_wit_shrink_stale_ask` | witness: a worker's shrink runs on an ask made before another worker's shrink failed, at or above the threshold that failure wrote | none | `NoStaleShrink` broken |
+| `HS_mut_unguarded_remove_count` | 0.1.20's unguarded remove, checked against `CountExact` alone: the insert that lands in the freed slot loses its bit, and the count stops matching what a lookup finds | none | `CountExact` broken |
+| `HS_mut_held_scan_leak` | the program of `HS_mut_held_scan`, checked against `NoLeak` alone | none | `NoLeak` broken |
+| `HS_mut_resize_retry_held` | 0.1.20's resize, which copies without the writer guards, checked against `OldHeld` alone: the replaced table becomes old with its guards down | grow | `OldHeld` broken |
+| `HS_mut_unguarded_remove_moved_retired` | 0.1.20's unguarded remove racing a move, checked against `RetiredUnreachable` alone: it retires key 1's entry while the move has it linked at its new slot | none | `RetiredUnreachable` broken |
+| `HS_mut_clear_keeps_bound_reset` | a clear that keeps the threshold, checked against `ShrinkReset` alone | clear | `ShrinkReset` broken |
+| `HS_mut_insert_skips_lookup` | an insert that does not look for its key's entry links a second one (key 0 inserted again) | none | `NoDuplicate` broken |
+| `HS_mut_get_waits_for_guard` | a lookup that waits for its home's writer guard, only the lookups fair (the writer may stop holding it) | none | `ReaderEnds` broken |
+| `HS_mut_insert_keeps_guard` | an insert that never releases its home guard, then a remove of the same home, weak fairness | none | `Termination` broken |
 
 ### Findings
 
@@ -987,12 +1014,14 @@ key 2 finds home 0's neighborhood full and moves key 1 to slot 2.
 
 ### TLC results
 
-The run recorded in `hopscotch/tlc-run.txt` (TLC's automatic worker count for a passing
-configuration, one worker for a violation, beside other work on a 36-core machine): 61 of 61
-configurations match `EXPECTED.txt`, in 511 s; the largest passing ones are `HS_big_disp`
-(4,588,001 distinct states, 176 s) and `HS_big_cond` (1,444,974, 55 s). Every configuration that
-passed before the reserved word reaches exactly the states it reached before. The 47
-configurations that predate the shrink threshold reach exactly the states (generated and
-distinct) and give exactly the results recorded before the threshold was modelled, and the 57
-that predate the work history (`work`) exactly those recorded before it was added (earlier
-versions of `hopscotch/tlc-run.txt`).
+The run recorded in `hopscotch/tlc-run.txt` (8 workers for a passing configuration, one for a
+violation, beside other work on a 36-core machine): 69 of 69 configurations match `EXPECTED.txt`,
+in 192 s of TLC time; the largest passing ones are `HS_big_disp` (4,588,001 distinct states, 65 s)
+and `HS_big_cond` (1,444,974, 22 s). The 61 configurations recorded before the mutations for
+`NoDuplicate`, `ReaderEnds` and `Termination` and the five single-property runs were added reach
+exactly the states (generated and distinct) and give exactly the results they gave before: a
+mutation hook changes nothing while its mutation is off. In the same way, every configuration that
+passed before the reserved word reaches exactly the states it reached before, the 47 that predate
+the shrink threshold exactly those recorded before it was modelled, and the 57 that predate the
+work history (`work`) exactly those recorded before it was added (earlier versions of
+`hopscotch/tlc-run.txt`).

@@ -37,8 +37,9 @@
 (* resize and a clear set `shrinkBelow` back to "no threshold".             *)
 (*                                                                          *)
 (* The hash of key k is k (the tests' identity hasher); NH is the           *)
-(* neighborhood size (32 in the code). `Mutation` puts back one 0.1.20 rule *)
-(* at a time; see README.md.                                                *)
+(* neighborhood size (32 in the code). `Mutation` puts back one wrong rule *)
+(* at a time (a 0.1.20 rule, or the bug a property is there to catch); see *)
+(* README.md.                                                               *)
 (***************************************************************************)
 EXTENDS Integers, Sequences, FiniteSets, TLC
 
@@ -56,7 +57,7 @@ CONSTANTS
     MaxCap,      \* the largest bucket count a table may have
     MaxStamp,    \* move stamps wrap at MaxStamp + 1
     MinCap,      \* MIN_CAPACITY (64 in the code): no table of MinCap buckets or fewer shrinks
-    Mutation     \* "none" or one 0.1.20 rule put back
+    Mutation     \* "none" or one wrong rule put back
 
 None == 0
 \* A reserved slot's word (`Word::reserved`): no entry, and not free.
@@ -245,13 +246,19 @@ IS(p) ==
     /\ ts' = [ts EXCEPT ![p].rd = HeldLoad(ts[p].t, ts[p].h, ts[p].hw.hops), ![p].pc = "IU"]
     /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
+\* Mutation "insert_skips_lookup": a write does not look for the key's entry among the slots it
+\* loaded and goes straight to linking a new one, so a key that has an entry gets a second entry a
+\* lookup can find (NoDuplicate catches it).
+SkipLookup == Mutation = "insert_skips_lookup"
+
 \* The entries IS loaded, used: the key's entry answered, replaced, or absent.
 IU(p) ==
     /\ ts[p].pc = "IU"
     /\ LET t == ts[p].t
            h == ts[p].h
            rd == ts[p].rd
-           found == {o \in ts[p].hw.hops : rd[o] \in Ents /\ ent.key[rd[o]] = K(p)}
+           found == IF SkipLookup THEN {}
+                    ELSE {o \in ts[p].hw.hops : rd[o] \in Ents /\ ent.key[rd[o]] = K(p)}
            e == IF found = {} THEN 0 ELSE rd[Min(found)]
            used == HeldUse(rd)
        IN CASE e # 0 /\ Op(p).op \in CondCmp ->
@@ -513,13 +520,17 @@ ICnt(p) ==
     /\ ts' = [ts EXCEPT ![p].cnt = TRUE, ![p].pc = "IR"]
     /\ UNCHANGED <<ent, tb, cur, latch, abs, hist, err, prot, shrinkBelow, recorded>>
 
+\* Mutation "insert_keeps_guard": an insert publishes its bits but never lets go of the home
+\* guard, so the next writer of that home waits for it forever (Termination catches it).
+KeepGuard == Mutation = "insert_keeps_guard"
+
 \* Release the home guard: the staged bits published; a linked entry becomes visible here.
 IR(p) ==
     /\ ts[p].pc = "IR"
     /\ LET t == ts[p].t
            h == ts[p].h
            linked == ts[p].out = "linked"
-       IN /\ tb' = [tb EXCEPT !.grd[t][h] = FALSE, !.hops[t][h] = ts[p].hw.hops,
+       IN /\ tb' = [tb EXCEPT !.grd[t][h] = KeepGuard, !.hops[t][h] = ts[p].hw.hops,
                               !.stamp[t][h] = ts[p].hw.stamp]
           /\ abs' = IF linked /\ Late THEN [abs EXCEPT ![K(p)] = V(p)] ELSE abs
           /\ hist' = IF linked /\ Late THEN Append(hist, <<K(p), V(p)>>) ELSE hist
@@ -741,12 +752,18 @@ R9(p) ==
 
 \* ---------------------------------------------------------------- get
 
+\* Mutation "get_waits_for_guard": a lookup waits for its home's writer guard, as a lock would,
+\* so a writer stopped while it holds the guard stops every lookup of that home (ReaderEnds
+\* catches it: in the code a lookup takes no guard and waits for nobody).
+GetWaits == Mutation = "get_waits_for_guard"
+
 G0(p) ==
     /\ ts[p].pc = "G0"
     /\ LET t == cur
            h == Home(K(p), tb.cap[t])
-       IN ts' = [ts EXCEPT ![p].t = t, ![p].h = h, ![p].hw = Word(t, h),
-                           ![p].rest = tb.hops[t][h], ![p].pc = "G2"]
+       IN /\ ~(GetWaits /\ tb.grd[t][h])
+          /\ ts' = [ts EXCEPT ![p].t = t, ![p].h = h, ![p].hw = Word(t, h),
+                              ![p].rest = tb.hops[t][h], ![p].pc = "G2"]
     /\ UNCHANGED <<ent, tb, cur, latch, count, abs, hist, err, prot, Thresholds>>
 
 \* Scan the slots the bits name, one load each.

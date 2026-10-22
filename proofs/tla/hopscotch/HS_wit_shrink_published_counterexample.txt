@@ -257,7 +257,7 @@ State 1: <Initial predicate>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 2: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 2: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -514,7 +514,7 @@ State 2: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 3: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
+State 3: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -771,7 +771,7 @@ State 3: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 4: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
+State 4: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1028,7 +1028,7 @@ State 4: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 5: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
+State 5: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1285,7 +1285,7 @@ State 5: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 6: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
+State 6: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1542,7 +1542,7 @@ State 6: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 7: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
+State 7: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -1799,7 +1799,7 @@ State 7: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 8: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
+State 8: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2056,7 +2056,7 @@ State 8: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 9: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
+State 9: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2313,7 +2313,7 @@ State 9: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 10: <RQ line 720, col 5 to line 728, col 68 of module HopscotchMap>
+State 10: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2570,7 +2570,7 @@ State 10: <RQ line 720, col 5 to line 728, col 68 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 11: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 11: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -2827,7 +2827,7 @@ State 11: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 12: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 12: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3084,7 +3084,7 @@ State 12: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 13: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 13: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3341,7 +3341,7 @@ State 13: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 14: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 14: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3598,7 +3598,7 @@ State 14: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 15: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 15: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -3855,7 +3855,7 @@ State 15: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 16: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 16: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4112,7 +4112,7 @@ State 16: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 17: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 17: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4369,7 +4369,7 @@ State 17: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 18: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 18: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4626,7 +4626,7 @@ State 18: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 19: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 19: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -4883,7 +4883,7 @@ State 19: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 20: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 20: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5140,7 +5140,7 @@ State 20: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 21: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 21: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5397,7 +5397,7 @@ State 21: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 22: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 22: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5654,7 +5654,7 @@ State 22: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 23: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 23: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -5911,7 +5911,7 @@ State 23: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 24: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 24: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6168,7 +6168,7 @@ State 24: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 25: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 25: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6425,7 +6425,7 @@ State 25: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 26: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 26: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6682,7 +6682,7 @@ State 26: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 27: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 27: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -6939,7 +6939,7 @@ State 27: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 28: <ZC line 1025, col 5 to line 1033, col 72 of module HopscotchMap>
+State 28: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7196,7 +7196,7 @@ State 28: <ZC line 1025, col 5 to line 1033, col 72 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 29: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 29: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7453,7 +7453,7 @@ State 29: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 30: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 30: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7710,7 +7710,7 @@ State 30: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 31: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 31: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -7967,7 +7967,7 @@ State 31: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 32: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 32: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8224,7 +8224,7 @@ State 32: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 33: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 33: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8481,7 +8481,7 @@ State 33: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 34: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 34: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8738,7 +8738,7 @@ State 34: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 35: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 35: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -8995,7 +8995,7 @@ State 35: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 36: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 36: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9252,7 +9252,7 @@ State 36: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<0>>, sum |-> <<0>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 37: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 37: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9509,7 +9509,7 @@ State 37: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 38: <Z4 line 1137, col 5 to line 1141, col 68 of module HopscotchMap>
+State 38: <Z4 line 1154, col 5 to line 1158, col 68 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -9766,7 +9766,7 @@ State 38: <Z4 line 1137, col 5 to line 1141, col 68 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 39: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
+State 39: <R9 line 742, col 5 to line 751, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10023,7 +10023,7 @@ State 39: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 40: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 40: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10280,7 +10280,7 @@ State 40: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 41: <IW line 224, col 5 to line 227, col 81 of module HopscotchMap>
+State 41: <IW line 225, col 5 to line 228, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10537,7 +10537,7 @@ State 41: <IW line 224, col 5 to line 227, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 42: <IC line 231, col 5 to line 239, col 77 of module HopscotchMap>
+State 42: <IC line 232, col 5 to line 240, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -10794,7 +10794,7 @@ State 42: <IC line 231, col 5 to line 239, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 43: <IS line 244, col 5 to line 246, col 81 of module HopscotchMap>
+State 43: <IS line 245, col 5 to line 247, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11051,7 +11051,7 @@ State 43: <IS line 244, col 5 to line 246, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 44: <IU line 250, col 5 to line 284, col 56 of module HopscotchMap>
+State 44: <IU line 256, col 5 to line 291, col 56 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11308,7 +11308,7 @@ State 44: <IU line 250, col 5 to line 284, col 56 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 45: <IFr line 292, col 5 to line 317, col 67 of module HopscotchMap>
+State 45: <IFr line 299, col 5 to line 324, col 67 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11565,7 +11565,7 @@ State 45: <IFr line 292, col 5 to line 317, col 67 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 46: <IL line 323, col 5 to line 344, col 61 of module HopscotchMap>
+State 46: <IL line 330, col 5 to line 351, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -11822,7 +11822,7 @@ State 46: <IL line 323, col 5 to line 344, col 61 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<0>>]
 /\ cur = 1
 
-State 47: <ICnt line 509, col 5 to line 514, col 85 of module HopscotchMap>
+State 47: <ICnt line 516, col 5 to line 521, col 85 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12079,7 +12079,7 @@ State 47: <ICnt line 509, col 5 to line 514, col 85 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 48: <IR line 518, col 5 to line 527, col 66 of module HopscotchMap>
+State 48: <IR line 529, col 5 to line 538, col 66 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12336,7 +12336,7 @@ State 48: <IR line 518, col 5 to line 527, col 66 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 49: <IA line 531, col 5 to line 547, col 70 of module HopscotchMap>
+State 49: <IA line 542, col 5 to line 558, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12593,7 +12593,7 @@ State 49: <IA line 531, col 5 to line 547, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 50: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 50: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -12850,7 +12850,7 @@ State 50: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 51: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
+State 51: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13107,7 +13107,7 @@ State 51: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 52: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
+State 52: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13364,7 +13364,7 @@ State 52: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 53: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
+State 53: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13621,7 +13621,7 @@ State 53: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 54: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
+State 54: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -13878,7 +13878,7 @@ State 54: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 55: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
+State 55: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -14135,7 +14135,7 @@ State 55: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 56: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
+State 56: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -14392,7 +14392,7 @@ State 56: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 57: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
+State 57: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -14649,7 +14649,7 @@ State 57: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 58: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
+State 58: <R9 line 742, col 5 to line 751, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -14906,7 +14906,7 @@ State 58: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 59: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 59: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -15163,7 +15163,7 @@ State 59: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 60: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
+State 60: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -15420,7 +15420,7 @@ State 60: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 61: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
+State 61: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -15677,7 +15677,7 @@ State 61: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 62: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
+State 62: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -15934,7 +15934,7 @@ State 62: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 63: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
+State 63: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -16191,7 +16191,7 @@ State 63: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 64: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
+State 64: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -16448,7 +16448,7 @@ State 64: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 65: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
+State 65: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -16705,7 +16705,7 @@ State 65: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 66: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
+State 66: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -16962,7 +16962,7 @@ State 66: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 67: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
+State 67: <R9 line 742, col 5 to line 751, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -17219,7 +17219,7 @@ State 67: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 68: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 68: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -17476,7 +17476,7 @@ State 68: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 69: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
+State 69: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -17733,7 +17733,7 @@ State 69: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 70: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
+State 70: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -17990,7 +17990,7 @@ State 70: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 71: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
+State 71: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -18247,7 +18247,7 @@ State 71: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 72: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
+State 72: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -18504,7 +18504,7 @@ State 72: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 73: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
+State 73: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -18761,7 +18761,7 @@ State 73: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 74: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
+State 74: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "live",
@@ -19018,7 +19018,7 @@ State 74: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 75: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
+State 75: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -19275,7 +19275,7 @@ State 75: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 76: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
+State 76: <R9 line 742, col 5 to line 751, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -19532,7 +19532,7 @@ State 76: <R9 line 731, col 5 to line 740, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 77: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
+State 77: <Dispatch line 200, col 5 to line 214, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -19789,7 +19789,7 @@ State 77: <Dispatch line 199, col 5 to line 213, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 78: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
+State 78: <RW line 607, col 5 to line 610, col 81 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -20046,7 +20046,7 @@ State 78: <RW line 596, col 5 to line 599, col 81 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 79: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
+State 79: <RC line 616, col 5 to line 632, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -20303,7 +20303,7 @@ State 79: <RC line 605, col 5 to line 621, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 80: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
+State 80: <RS line 638, col 5 to line 653, col 75 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -20560,7 +20560,7 @@ State 80: <RS line 627, col 5 to line 642, col 75 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 81: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
+State 81: <RU line 658, col 5 to line 676, col 61 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -20817,7 +20817,7 @@ State 81: <RU line 647, col 5 to line 665, col 61 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 82: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
+State 82: <RN line 702, col 5 to line 708, col 69 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -21074,7 +21074,7 @@ State 82: <RN line 691, col 5 to line 697, col 69 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 83: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
+State 83: <RR line 711, col 5 to line 717, col 77 of module HopscotchMap>
 /\ ent = [ st |->
       << "live",
          "retired",
@@ -21331,7 +21331,7 @@ State 83: <RR line 700, col 5 to line 706, col 77 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 84: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
+State 84: <RT line 721, col 5 to line 725, col 71 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -21588,7 +21588,7 @@ State 84: <RT line 710, col 5 to line 714, col 71 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 85: <RQ line 720, col 5 to line 728, col 68 of module HopscotchMap>
+State 85: <RQ line 731, col 5 to line 739, col 68 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -21845,7 +21845,7 @@ State 85: <RQ line 720, col 5 to line 728, col 68 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 86: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 86: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -22102,7 +22102,7 @@ State 86: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 87: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 87: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -22359,7 +22359,7 @@ State 87: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 88: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 88: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -22616,7 +22616,7 @@ State 88: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 89: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 89: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -22873,7 +22873,7 @@ State 89: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 90: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 90: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -23130,7 +23130,7 @@ State 90: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 91: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 91: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -23387,7 +23387,7 @@ State 91: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 92: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 92: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -23644,7 +23644,7 @@ State 92: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 93: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 93: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -23901,7 +23901,7 @@ State 93: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 94: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 94: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -24158,7 +24158,7 @@ State 94: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 95: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 95: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -24415,7 +24415,7 @@ State 95: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 96: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 96: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -24672,7 +24672,7 @@ State 96: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 97: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 97: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -24929,7 +24929,7 @@ State 97: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 98: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 98: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -25186,7 +25186,7 @@ State 98: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 99: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 99: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -25443,7 +25443,7 @@ State 99: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 100: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 100: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -25700,7 +25700,7 @@ State 100: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 101: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 101: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -25957,7 +25957,7 @@ State 101: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 102: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
+State 102: <Z1 line 1016, col 5 to line 1032, col 70 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -26214,7 +26214,7 @@ State 102: <Z1 line 999, col 5 to line 1015, col 70 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 103: <ZC line 1025, col 5 to line 1033, col 72 of module HopscotchMap>
+State 103: <ZC line 1042, col 5 to line 1050, col 72 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -26471,7 +26471,7 @@ State 103: <ZC line 1025, col 5 to line 1033, col 72 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 104: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 104: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -26728,7 +26728,7 @@ State 104: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 105: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 105: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -26985,7 +26985,7 @@ State 105: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 106: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 106: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -27242,7 +27242,7 @@ State 106: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 107: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 107: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -27499,7 +27499,7 @@ State 107: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 108: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 108: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -27756,7 +27756,7 @@ State 108: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 109: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 109: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -28013,7 +28013,7 @@ State 109: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 110: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 110: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -28270,7 +28270,7 @@ State 110: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 111: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 111: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -28527,7 +28527,7 @@ State 111: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 112: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 112: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -28784,7 +28784,7 @@ State 112: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 113: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 113: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -29041,7 +29041,7 @@ State 113: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 114: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 114: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -29298,7 +29298,7 @@ State 114: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 115: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 115: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -29555,7 +29555,7 @@ State 115: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 116: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 116: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -29812,7 +29812,7 @@ State 116: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 117: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 117: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -30069,7 +30069,7 @@ State 117: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 118: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 118: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -30326,7 +30326,7 @@ State 118: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 119: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 119: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -30583,7 +30583,7 @@ State 119: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 120: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 120: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -30840,7 +30840,7 @@ State 120: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 121: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 121: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",
@@ -31097,7 +31097,7 @@ State 121: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
 /\ work = [first |-> <<3>>, sum |-> <<3>>, ins |-> <<1>>]
 /\ cur = 1
 
-State 122: <ZK line 1038, col 5 to line 1091, col 49 of module HopscotchMap>
+State 122: <ZK line 1055, col 5 to line 1108, col 49 of module HopscotchMap>
 /\ ent = [ st |->
       << "retired",
          "retired",

@@ -32,8 +32,9 @@
 (* not retired at the load (`prot`); reading a node not protected so is a   *)
 (* use after free.                                                          *)
 (*                                                                          *)
-(* `Mutation` puts back one rule of kovan-map 0.1.20 (or of the check-addr  *)
-(* branch) at a time; see README.md.                                        *)
+(* `Mutation` puts back one wrong rule at a time: a rule of kovan-map 0.1.20 *)
+(* or of the check-addr branch, or the bug a property is there to catch;    *)
+(* see README.md.                                                           *)
 (***************************************************************************)
 EXTENDS Integers, Sequences, FiniteSets, TLC
 
@@ -48,7 +49,7 @@ CONSTANTS
     MaxNodes,    \* node pool bound
     MaxTables,   \* table pool bound
     MaxCap,      \* the largest bucket count any table has
-    Mutation     \* "none", or one 0.1.20 rule put back (README.md)
+    Mutation     \* "none", or one wrong rule put back (README.md)
 
 None == 0
 Procs == Workers \cup {RZ}
@@ -213,6 +214,11 @@ F1(p) ==
           ELSE ts' = [ts EXCEPT ![p].c = w.p, ![p].pc = "F2"]
     /\ UNCHANGED <<mem, tb, cur, latch, gcnt, abs, hist, err>>
 
+\* Mutation "insert_skips_lookup": an insert's walk passes over the node of its own key and
+\* appends a new node at the tail, so the key ends up with two nodes a lookup can find
+\* (NoDuplicate catches it).
+SkipLookup == Mutation = "insert_skips_lookup"
+
 \* A held link word is walked through as unheld: it names the node's successor, and every CAS
 \* the caller makes expects the word without the flag, so it fails while the link is held.
 F2(p) ==
@@ -226,7 +232,7 @@ F2(p) ==
             /\ prot' = [prot EXCEPT ![p] = Protect(@, nw.p)]
             /\ ts' = CASE nw.f -> [ts EXCEPT ![p].nw = nw, ![p].fres = "frozen", ![p].pc = "FR"]
                        [] nw.m -> [ts EXCEPT ![p].nw = nw, ![p].pc = "F3"]
-                       [] mem.key[c] = K(p) ->
+                       [] mem.key[c] = K(p) /\ ~(SkipLookup /\ ts[p].ret = "ins") ->
                                [ts EXCEPT ![p].nw = nw, ![p].fres = "found", ![p].pc = "FR"]
                        [] OTHER -> [ts EXCEPT ![p].nw = nw, ![p].prev = NextLoc(c),
                                               ![p].c = nw.p, ![p].pc = "F2"]
@@ -479,6 +485,11 @@ R3(p) ==
     /\ ts' = Go(p, IF Stale(p) THEN "F0" ELSE "R4")
     /\ UNCHANGED <<mem, cur, latch, abs, hist, err, prot>>
 
+\* Mutation "unlink_no_retire": the remove whose CAS unlinks the node forgets to retire it, so
+\* the node stays live with nothing reaching it, and its memory is never freed (NoLeak catches
+\* it).
+Forget == Mutation = "unlink_no_retire"
+
 \* Unlink it: the thread whose CAS unlinks it retires it; a failed CAS runs the
 \* cleanup walk (0.1.20 and check-addr: no cleanup, the node was already retired).
 R4(p) ==
@@ -487,10 +498,11 @@ R4(p) ==
            nw == ts[p].nw
            ok == Rd(ts[p].prev) = L(c)
            old == Mutation \in {"retire_on_mark", "check_addr"}
+           retires == ok /\ ~old /\ ~Forget
            m1 == IF ok THEN MemW(mem, ts[p].prev, L(nw.p)) ELSE mem
        IN /\ tb' = IF ok THEN TbW(tb, ts[p].prev, L(nw.p)) ELSE tb
-          /\ mem' = IF ok /\ ~old THEN [m1 EXCEPT !.st[c] = "retired"] ELSE m1
-          /\ err' = IF ok /\ ~old /\ mem.st[c] = "retired" THEN Fail("double_retire") ELSE err
+          /\ mem' = IF retires THEN [m1 EXCEPT !.st[c] = "retired"] ELSE m1
+          /\ err' = IF retires /\ mem.st[c] = "retired" THEN Fail("double_retire") ELSE err
           /\ ts' = IF ok \/ old THEN Go(p, "R9")
                    ELSE [ts EXCEPT ![p].ret = "cleanup", ![p].pc = "F0"]
     /\ UNCHANGED <<cur, latch, gcnt, abs, hist, prot>>

@@ -43,3 +43,6 @@ CM_live_reader_cond                MC_ChainedMap      pass
 CM_mut_unheld_check                MC_ChainedMap      violated:CondExact
 CM_wit_held_meet                   MC_ChainedMap      violated:NoHeldMeet
 CM_wit_freeze_wait                 MC_ChainedMap      violated:NoFreezeWait
+CM_mut_insert_skips_lookup         MC_ChainedMap      violated:NoDuplicate
+CM_mut_unlink_no_retire            MC_ChainedMap      violated:NoLeak
+CM_mut_revalidate_claim_frozen     MC_ChainedMap      violated:OldFrozen

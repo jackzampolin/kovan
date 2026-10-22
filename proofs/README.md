@@ -78,12 +78,12 @@ Lean: install elan once (`proofs/lean/README.md` says how). The recipes run
   flush, a thread's exit and the hand-over of its id), 69 configurations: 30 that must pass and
   39 mutations and witnesses that must fail.
 - `tla/chained/`: `kovan_map::HashMap`, the chained map (the link words, the writes, the walks,
-  the conditional writes, the freezing migration and clear), 44 configurations: 26 that must
-  pass and 18 that must fail.
+  the conditional writes, the freezing migration and clear), 47 configurations: 26 that must
+  pass and 21 that must fail.
 - `tla/hopscotch/`: `kovan_map::HopscotchMap` (the guarded insert and remove, displacement, the
   conditional writes, the lookup's rescan, resize, clear, the walk across a table swap, the
-  shrink a remove asks for, its threshold and the work of failed shrinks per thread), 61
-  configurations: 35 that must pass and 26 that must fail.
+  shrink a remove asks for, its threshold and the work of failed shrinks per thread), 69
+  configurations: 35 that must pass and 34 that must fail.
 - `lean/Kovan/HopscotchShrink.lean`: the hopscotch map's shrink threshold, for one thread and
   every sequence of operations: a successful resize and a clear erase it; after a failed shrink
   at `c` entries, until the next erasure, no shrink is asked for while `max (c / 2) 1` entries
